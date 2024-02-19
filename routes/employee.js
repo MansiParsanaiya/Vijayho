@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const { createEmployee, getEmployee, dailyAttendance, monthlyAttendance } = require('../controllers/employeeController');
+const { createEmployee, getEmployee, dailyAttendance, monthlyAttendance, test } = require('../controllers/employeeController');
 
 /* GET users listing. */
 // router.get('/', function(req, res, next) {
@@ -12,6 +12,7 @@ const { createEmployee, getEmployee, dailyAttendance, monthlyAttendance } = requ
 
 // Read
 router.get('/', getEmployee);
+router.post('/', test);
 
 // Create
 router.post('/postEmployee', createEmployee);
