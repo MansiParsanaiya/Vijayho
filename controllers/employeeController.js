@@ -7,23 +7,31 @@ const Employee = require("../models/employeeModel");
 
 exports.createEmployee = async (req, res) => {
     try {
+        console.log(req.body)
         const employee = new Employee(req.body);
         await employee.save();
-        res.status(201).send('Employee registered successfully');
         res.status(201).json({ message: 'Employee registered successfully' });
     } catch (error) {
-        res.status(400).send(error);
-        res.status(500).json({ message: 'Employee Not registered :( ' });
+        res.status(400).json(error);
+        // res.status(500).json({ message: 'Employee Not registered :( ' });
+    }
+}
+exports.test = async (req, res) => {
+    try {
+        res.status(201).json({ message: 'Employee registered successfully' });
+    } catch (error) {
+        res.status(400).json(error);
+        // res.status(500).json({ message: 'Employee Not registered :( ' });
     }
 }
 
 exports.getEmployee = async (req, res) => {
     try {
         const employees = await Employee.find();
-        console.log(employees,"i m calling employee controller")
-        res.status(200).send(employees);
+        console.log(employees, "i m calling employee controller")
+        res.status(200).json(employees);
     } catch (error) {
-        res.status(500).send(error);
+        res.status(500).json(error);
     }
 }
 
@@ -32,7 +40,7 @@ exports.dailyAttendance = async (req, res) => {
     const { enrollmentNumber, present } = req.body;
 
     if (!enrollmentNumber || present === undefined) {
-        return res.status(400).send("Both enrollmentNumber and present are required in the request body");
+        return res.status(400).json("Both enrollmentNumber and present are required in the request body");
     }
 
     try {
@@ -47,13 +55,13 @@ exports.dailyAttendance = async (req, res) => {
         );
 
         if (!employee) {
-            return res.status(404).send("Employee not found");
+            return res.status(404).json("Employee not found");
         }
+        res.status(200).json(employee);
 
-        res.send(employee);
     } catch (error) {
         console.error(error);
-        res.status(500).send("Internal server error");
+        res.status(500).json("Internal server error");
     }
 }
 
@@ -66,7 +74,7 @@ exports.dailyAttendance = async (req, res) => {
 //         const employee = await Employee.findById(req.params.id);
 
 //         if (!employee) {
-//             return res.status(404).send();
+//             return res.status(404).json();
 //         }
 
 //         // Filter daily attendance for the specified month and year
