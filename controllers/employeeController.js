@@ -3,10 +3,11 @@ const Employee = require("../models/employeeModel");
 
 // Create
 exports.createEmployee = async (req, res) => {
-    try {
+    try 
+    {
         const student = new Employee(req.body);
         await student.save();
-        res.status(201).send(student);
+        res.status(201).send(`employee created successfully ${student}`);
     } catch (error) {
         res.status(400).send(error);
     }
