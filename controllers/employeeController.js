@@ -1,27 +1,14 @@
 const Employee = require("../models/employeeModel");
 
-// exports.getUser = async (req, res) => {
-//     const user = req.body;
-//     res.send(user)
-// }
 
+// Create
 exports.createEmployee = async (req, res) => {
     try {
-        console.log(req.body)
-        const employee = new Employee(req.body);
-        await employee.save();
-        res.status(201).json({ message: 'Employee registered successfully' });
+        const student = new Employee(req.body);
+        await student.save();
+        res.status(201).send(student);
     } catch (error) {
-        res.status(400).json(error);
-        // res.status(500).json({ message: 'Employee Not registered :( ' });
-    }
-}
-exports.test = async (req, res) => {
-    try {
-        res.status(201).json({ message: 'Employee registered successfully' });
-    } catch (error) {
-        res.status(400).json(error);
-        // res.status(500).json({ message: 'Employee Not registered :( ' });
+        res.status(400).send(error);
     }
 }
 
@@ -34,7 +21,6 @@ exports.getEmployee = async (req, res) => {
         res.status(500).json(error);
     }
 }
-
 
 exports.dailyAttendance = async (req, res) => {
     const { enrollmentNumber, present } = req.body;
