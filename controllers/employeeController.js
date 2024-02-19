@@ -20,6 +20,7 @@ exports.createEmployee = async (req, res) => {
 exports.getEmployee = async (req, res) => {
     try {
         const employees = await Employee.find();
+        console.log(employees,"i m calling employee")
         res.status(200).send(employees);
     } catch (error) {
         res.status(500).send(error);

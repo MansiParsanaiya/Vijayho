@@ -10,11 +10,11 @@ const { createEmployee, getEmployee, dailyAttendance, monthlyAttendance } = requ
 
 // Routes
 
+// Read
+router.get('/', getEmployee);
+
 // Create
 router.post('/postEmployee', createEmployee);
-
-// Read
-router.get('/getEmployee', getEmployee);
 
 // Update daily attendance
 router.patch('/daily-attendance/:enrollmentNumber', dailyAttendance);
