@@ -15,7 +15,7 @@ router.get('/', getEmployee);
 
 // Create
 router.post('/', createEmployee);
-router.post('/test', test);
+router.get('/test', test);
 
 // Update daily attendance
 router.patch('/daily-attendance/:enrollmentNumber', dailyAttendance);
