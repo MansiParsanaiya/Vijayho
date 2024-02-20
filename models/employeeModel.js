@@ -40,7 +40,7 @@ employeeSchema.pre('save', async function (next) {
 
     try {
         const count = await Employee.countDocuments();
-        this.enrollmentNumber = `EN${count + 1}`; 
+        this.enrollmentNumber = `${count + 1}`; 
         next();
     } catch (error) {
         next(error);
