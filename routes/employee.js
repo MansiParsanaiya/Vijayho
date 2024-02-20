@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const { createEmployee, getEmployee, dailyAttendance, monthlyAttendance, test } = require('../controllers/employeeController');
+const { getEmployee, dailyAttendance, monthlyAttendance } = require('../controllers/employeeController');
 
 /* GET users listing. */
 // router.get('/', function(req, res, next) {
@@ -14,7 +14,7 @@ const { createEmployee, getEmployee, dailyAttendance, monthlyAttendance, test } 
 router.get('/', getEmployee);
 
 // Create
-router.post('/', createEmployee);
+// router.post('/', createEmployee);
 
 // Update daily attendance
 router.patch('/daily-attendance/:enrollmentNumber', dailyAttendance);

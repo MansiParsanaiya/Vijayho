@@ -2,15 +2,33 @@ const Employee = require("../models/employeeModel");
 
 
 // Create
+// exports.createEmployee = async (req, res) => {
+//     try {
+//         const employee = new Employee(req.body);
+//         await employee.save();
+//         res.status(201).send(`message ${employee}`);
+//     } catch (err) {
+//         res.status(400).send(err);
+//     }
+// }
+
 exports.createEmployee = async (req, res) => {
     try {
-        const employee = new Employee(req.body);
-        await employee.save();
-        res.status(201).send(`message ${employee}`);
-    } catch (err) {
-        res.status(400).send(err);
+        // Assuming the data is sent in the request body
+        const employeeData = req.body;
+
+        // Create a new Employee document
+        const newEmployee = new Employee(employeeData);
+
+        // Save the document to the database
+        const savedEmployee = await newEmployee.save();
+
+        res.status(201).json("employe registered",savedEmployee);
+    } catch (error) {
+        console.error('Error creating employee:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
 
 exports.getEmployee = async (req, res) => {
     try {
