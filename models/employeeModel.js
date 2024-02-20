@@ -32,21 +32,5 @@ const employeeSchema = new mongoose.Schema({
     },
 });
 
-employeeSchema.pre('save', async function (next) {
-    if (!this.isNew) {
-        next();
-        return;
-    }
-
-    try {
-        const count = await Employee.countDocuments();
-        this.enrollmentNumber = `${count + 1}`; 
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
-
-
 const Employee = mongoose.model('Employee', employeeSchema);
 module.exports = Employee;

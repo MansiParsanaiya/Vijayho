@@ -4,8 +4,17 @@ const Employee = require("../models/employeeModel");
 exports.createEmployee = async (req, res) => {
     try {
     
+        // Entrollment Number Auto-Increment
+        const count = await Employee.countDocuments();
+        const enrollNum = count + 1;
+
         const employeeData = req.body;
-        const newEmployee = new Employee(employeeData);
+        // const newEmployee = new Employee(employeeData);
+        const newEmployee = new Employee({
+            ...employeeData,
+            enrollmentNumber: enrollNum.toString() 
+        });
+
         await newEmployee.save();
 
         res.status(201).json({message: "employe registered" , newEmployee});
