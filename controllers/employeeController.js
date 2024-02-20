@@ -1,6 +1,5 @@
 const Employee = require("../models/employeeModel");
 
-
 // Create
 exports.createEmployee = async (req, res) => {
     try {
