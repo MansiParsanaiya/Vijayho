@@ -23,12 +23,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Mongo DataBase Connection
 connection();
 
-// const PORT = 3000;
-
-// app.use(bodyParser.json());
-
 // Start the server
-const port = 8000; // or any other available port
+const port = 8000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
@@ -37,6 +33,3 @@ app.use('/', indexRouter);
 app.use('/employee', employeeRouter);
 
 module.exports = app;
-
-
-// https://vijayhoapi.onrender.com

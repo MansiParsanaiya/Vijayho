@@ -3,19 +3,13 @@ var router = express.Router();
 
 const { getEmployee, dailyAttendance, monthlyAttendance, createEmployee, test } = require('../controllers/employeeController');
 
-/* GET users listing. */
-// router.get('/', function(req, res, next) {
-//   res.send('respond with a resource');
-// });
-
 // Routes
 
 // Read
-router.get('/', getEmployee);
-router.get('/test', test);
+router.get('/getEmployee', getEmployee);
 
 // Create
-router.post('/', createEmployee);
+router.post('/postEmployee', createEmployee);
 
 // Update daily attendance
 router.patch('/daily-attendance/:enrollmentNumber', dailyAttendance);

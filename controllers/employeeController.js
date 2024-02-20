@@ -2,25 +2,6 @@ const Employee = require("../models/employeeModel");
 
 
 // Create
-// exports.createEmployee = async (req, res) => {
-//     try {
-//         const employee = new Employee(req.body);
-//         await employee.save();
-//         res.status(201).send(`message ${employee}`);
-//     } catch (err) {
-//         res.status(400).send(err);
-//     }
-// }
-
-
-exports.test = async (res, req) => {
-    try {
-        res.status(201).json({ message: "employee registered" });
-    } catch (error) {
-        res.status(500).json({ message: "Error calling employee controller" });
-    }
-}
-
 exports.createEmployee = async (req, res) => {
     try {
     
@@ -35,6 +16,7 @@ exports.createEmployee = async (req, res) => {
     }
 };
 
+// Read
 exports.getEmployee = async (req, res) => {
     try {
         const employees = await Employee.find();
@@ -45,6 +27,7 @@ exports.getEmployee = async (req, res) => {
     }
 }
 
+// Update Daily Attendence
 exports.dailyAttendance = async (req, res) => {
     const { enrollmentNumber, present } = req.body;
 
