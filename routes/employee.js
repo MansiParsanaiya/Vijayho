@@ -12,10 +12,10 @@ const { getEmployee, dailyAttendance, monthlyAttendance, createEmployee, test } 
 
 // Read
 router.get('/', getEmployee);
+router.get('/test', test);
 
 // Create
 router.post('/', createEmployee);
-router.get('/test', test);
 
 // Update daily attendance
 router.patch('/daily-attendance/:enrollmentNumber', dailyAttendance);

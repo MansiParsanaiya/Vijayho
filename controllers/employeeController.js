@@ -23,16 +23,12 @@ exports.test = async (res, req) => {
 
 exports.createEmployee = async (req, res) => {
     try {
-        // Assuming the data is sent in the request body
+    
         const employeeData = req.body;
-
-        // Create a new Employee document
         const newEmployee = new Employee(employeeData);
+        await newEmployee.save();
 
-        // Save the document to the database
-        const savedEmployee = await newEmployee.save();
-
-        res.status(201).json("employe registered", savedEmployee);
+        res.status(201).json({message: "employe registered" , newEmployee});
     } catch (error) {
         console.error('Error creating employee:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
