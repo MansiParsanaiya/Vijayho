@@ -12,6 +12,15 @@ const Employee = require("../models/employeeModel");
 //     }
 // }
 
+
+exports.test = async (res, req) => {
+    try {
+        res.status(201).json({ message: "employee registered" });
+    } catch (error) {
+        res.status(500).json({ message: "Error calling employee controller" });
+    }
+}
+
 exports.createEmployee = async (req, res) => {
     try {
         // Assuming the data is sent in the request body
@@ -23,7 +32,7 @@ exports.createEmployee = async (req, res) => {
         // Save the document to the database
         const savedEmployee = await newEmployee.save();
 
-        res.status(201).json("employe registered",savedEmployee);
+        res.status(201).json("employe registered", savedEmployee);
     } catch (error) {
         console.error('Error creating employee:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
