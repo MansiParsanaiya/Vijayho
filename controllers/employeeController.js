@@ -17,7 +17,7 @@ exports.createEmployee = async (req, res) => {
 
         await newEmployee.save();
 
-        res.status(201).json({message: "Employee registered Successfully !" , newEmployee});
+        res.status(200).json({message: "Employee registered Successfully !"});
     } catch (error) {
         console.error('Error creating employee:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -28,7 +28,6 @@ exports.createEmployee = async (req, res) => {
 exports.getEmployee = async (req, res) => {
     try {
         const employees = await Employee.find();
-        console.log(employees, "i m calling employee controller")
         res.status(200).json(employees);
     } catch (error) {
         res.status(500).json(error);
