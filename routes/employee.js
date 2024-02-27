@@ -3,6 +3,7 @@ var router = express.Router();
 
 // const { getEmployee, createEmployee, updateEmployee } = require('../controllers/employeeController');
 const employeeController = require('../controllers/employeeController');
+const { totalEmployee } = require('../controllers/homeController');
 
 // Routes
 
@@ -17,5 +18,13 @@ router.patch('/:enrollmentNumber', employeeController.updateEmployee)
 
 // Delete
 router.delete('/delete/:enrollmentNumber', employeeController.deleteEmployee)
+
+
+
+// =================================================   Home Page  ================================================
+
+router.get('/', totalEmployee)
+
+
 
 module.exports = router;
