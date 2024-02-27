@@ -10,6 +10,7 @@ var cors=require('cors');
 
 var indexRouter = require('./routes/index');
 var employeeRouter = require('./routes/employee');
+var attendanceRouter = require('./routes/attendance');
 const connection = require('./connect');
 
 
@@ -32,5 +33,6 @@ app.listen(port, () => {
 
 app.use('/', indexRouter);
 app.use('/employee', employeeRouter);
+app.use('/attendance', attendanceRouter);
 
 module.exports = app;
