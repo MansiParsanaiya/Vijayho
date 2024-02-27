@@ -47,23 +47,28 @@ exports.updateAttendance = async (req, res) => {
   const { attendance } = req.body;
 
   try {
+    // Find the attendance record in the database
     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
 
+    // If the attendance record doesn't exist, return a 404 error
     if (!existingAttendance) {
       return res.status(404).json({ message: 'Attendance not found for this enrollmentNumber on this date' });
     }
 
+    // Update the attendance field
     existingAttendance.attendance = attendance;
-    
+
+    // Save the updated attendance record
     await existingAttendance.save();
 
+    // Send a success response
     res.json({ message: 'Attendance updated successfully' });
   } catch (error) {
+    // If an error occurs, log it and send a 500 (Internal Server Error) response
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
-
 
 // =========================================  Extra Work  ======================================================== 
 
