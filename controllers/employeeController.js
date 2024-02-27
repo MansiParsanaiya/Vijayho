@@ -56,3 +56,21 @@ exports.updateEmployee = async (req, res) => {
         res.status(500).send({ error: 'Server error' });
     }
 }
+
+exports.deleteEmployee = async (req, res) => {
+    const enrollmentNumber = req.params.enrollmentNumber;
+
+    try {
+        // Find the employee by enrollmentNumber and delete
+        const employee = await Employee.findOneAndDelete({ enrollmentNumber });
+
+        if (!employee) {
+            return res.status(404).send({ error: 'Employee not found' });
+        }
+
+        res.send({ message: `Enrollment Number ${enrollmentNumber} deleted successfully !` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: 'Server error' });
+    }
+}
