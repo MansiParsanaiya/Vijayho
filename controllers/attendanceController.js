@@ -1,6 +1,5 @@
 const Attendance = require('../models/attendanceModel');
 
-
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
@@ -20,7 +19,6 @@ exports.addAttendance = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
-
 
 exports.getAttendanceByDate = async (req, res) => {
   const { date } = req.params;
@@ -45,6 +43,8 @@ exports.getAttendanceByDate = async (req, res) => {
 }
 
 
+// =========================================  Extra Work  ======================================================== 
+
 exports.getAttendanceBetweenTwoDates = async (req, res) => {
   const { enrollmentNumber, startDate, endDate } = req.params;
 
@@ -59,15 +59,8 @@ exports.getAttendanceBetweenTwoDates = async (req, res) => {
         enrollmentNumber: record.enrollmentNumber,
         attendance: record.attendance,
         date: record.date.toISOString().split('T')[0],
-      };
-    });
-
-    // if (attendanceBetweenDates.data) {
-    //   return res.status(404).json({ message: 'Attendance record not found for this enrollmentNumber on this date' });
-    // }
-    // else {
-    //   res.status(200).json({ success: true, data: attendanceBetweenDates })
-    // }
+      }
+    })
 
     res.status(200).json({ success: true, data: attendanceBetweenDates });
   } catch (error) {
