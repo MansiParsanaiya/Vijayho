@@ -4,6 +4,7 @@ const router = express.Router();
 const attendanceController = require('../controllers/attendanceController');
 
 router.post('/:enrollmentNumber/add-attendance', attendanceController.addAttendance)
+
 router.get('/getAttendance/:date', attendanceController.getAttendanceByDate)
 
 router.patch('/update/:enrollmentNumber/:date', attendanceController.updateAttendance);
