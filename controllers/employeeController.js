@@ -3,7 +3,7 @@ const Employee = require("../models/employeeModel");
 // Create
 exports.createEmployee = async (req, res) => {
     try {
-    
+
         // Entrollment Number Auto-Increment
         const count = await Employee.countDocuments();
         const enrollNum = count + 1;
@@ -12,12 +12,12 @@ exports.createEmployee = async (req, res) => {
         // const newEmployee = new Employee(employeeData);
         const newEmployee = new Employee({
             ...employeeData,
-            enrollmentNumber: enrollNum.toString() 
+            enrollmentNumber: enrollNum.toString()
         });
 
         await newEmployee.save();
 
-        res.status(200).json({message: "Employee registered Successfully !"});
+        res.status(200).json({ message: "Employee registered Successfully !" });
     } catch (error) {
         console.error('Error creating employee:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -34,32 +34,25 @@ exports.getEmployee = async (req, res) => {
     }
 }
 
-// Update Daily Attendence
-exports.dailyAttendance = async (req, res) => {
-    const { enrollmentNumber, present } = req.body;
-
-    if (!enrollmentNumber || present === undefined) {
-        return res.status(400).json("Both enrollmentNumber and present are required in the request body");
-    }
+// Update 
+exports.updateEmployee = async (req, res) => {
+    const enrollmentNumber = req.params.enrollmentNumber;
+    const updateFields = req.body;
 
     try {
-        const employee = await Employee.findOneAndUpdate(
-            { enrollmentNumber: enrollmentNumber },
-            {
-                $push: {
-                    'attendance.daily': { present, date: new Date() }
-                }
-            },
-            { new: true, upsert: false }
-        );
+        // Exclude enrollmentNumber from updateFields
+        delete updateFields.enrollmentNumber;
+
+        // Find the employee by enrollmentNumber and update
+        const employee = await Employee.findOneAndUpdate({ enrollmentNumber }, updateFields, { new: true });
 
         if (!employee) {
-            return res.status(404).json("Employee not found");
+            return res.status(404).send({ error: 'Employee not found' });
         }
-        res.status(200).json(employee);
 
+        res.send(employee);
     } catch (error) {
         console.error(error);
-        res.status(500).json("Internal server error");
+        res.status(500).send({ error: 'Server error' });
     }
 }
