@@ -5,7 +5,8 @@ const attendanceController = require('../controllers/attendanceController');
 
 router.post('/:enrollmentNumber/add-attendance', attendanceController.addAttendance)
 router.get('/getAttendance/:date', attendanceController.getAttendanceByDate)
-router.patch('/update-attendance/:enrollmentNumber/:date', attendanceController.updateAttendance);
+// router.patch('/:enrollmentNumber/:date', attendanceController.updateAttendance);
+router.patch('/update/:enrollmentNumber/:date', attendanceController.updateAttendance);
 
 // =========================================  Extra Work  ======================================================== 
 

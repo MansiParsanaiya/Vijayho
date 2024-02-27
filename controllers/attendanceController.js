@@ -43,16 +43,18 @@ exports.getAttendanceByDate = async (req, res) => {
 }
 
 exports.updateAttendance = async (req, res) => {
-  try {
-    const { enrollmentNumber, attendance, date } = req.body;
+  const { enrollmentNumber, date } = req.params;
+  const { attendance } = req.body;
 
+  try {
     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
 
     if (!existingAttendance) {
-      return res.status(404).json({ message: 'Attendance record not found for this enrollmentNumber on this date' });
+      return res.status(404).json({ message: 'Attendance not found for this enrollmentNumber on this date' });
     }
 
     existingAttendance.attendance = attendance;
+    
     await existingAttendance.save();
 
     res.json({ message: 'Attendance updated successfully' });

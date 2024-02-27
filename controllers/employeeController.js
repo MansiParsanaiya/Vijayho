@@ -63,29 +63,3 @@ exports.dailyAttendance = async (req, res) => {
         res.status(500).json("Internal server error");
     }
 }
-
-
-// Get monthly attendance
-// exports.monthlyAttendance = async (req, res) => {
-//     try {
-//         const { month, year } = req.query;
-
-//         const employee = await Employee.findById(req.params.id);
-
-//         if (!employee) {
-//             return res.status(404).json();
-//         }
-
-//         // Filter daily attendance for the specified month and year
-//         const monthlyAttendance = employee.attendance.daily
-//             .filter((entry) => entry.date.getMonth() === parseInt(month) && entry.date.getFullYear() === parseInt(year))
-//             .map((entry) => ({
-//                 date: entry.date,
-//                 present: entry.present,
-//             }));
-
-//         res.send(monthlyAttendance);
-//     } catch (error) {
-//         res.status(400).send(error);
-//     }
-// }
