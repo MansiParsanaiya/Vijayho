@@ -42,74 +42,6 @@ exports.getAttendanceByDate = async (req, res) => {
   }
 }
 
-
-// =========================================  Extra Work  ======================================================== 
-
-// exports.getAttendanceBetweenTwoDates = async (req, res) => 
-// {
-//   const { enrollmentNumber, startDate, endDate } = req.params;
-
-//   try {
-//     const attendance = await Attendance.find({
-//       'enrollmentNumber': enrollmentNumber,
-//       'date': { $gte: new Date(startDate), $lt: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)) },
-//     });
-
-
-//     if (attendance.length === 0) {
-//       return res.status(404).json({ message: 'Attendance record not found for this enrollmentNumber on this date' });
-//     }
-
-//     const attendanceBetweenDates = attendance.map((record) => {
-//       return {
-//         enrollmentNumber: record.enrollmentNumber,
-//         attendance: record.attendance,
-//         date: record.date.toISOString().split('T')[0],
-//       }
-//     })
-
-//     res.status(200).json({ success: true, data: attendanceBetweenDates });
-//   } catch (error) {
-//     res.status(500).json({ success: false, error: error.message });
-//   }
-// }
-
-exports.getAttendanceBetweenTwoDates = async (req, res) => {
-  const { enrollmentNumber, startDate, endDate } = req.params;
-
-  // Validate startDate and endDate
-  const startDateObj = new Date(startDate);
-  const endDateObj = new Date(endDate);
-  
-  if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
-    return res.status(400).json({ message: 'Invalid date format' });
-  }
-
-  try {
-    const attendance = await Attendance.find({
-      'enrollmentNumber': enrollmentNumber,
-      'date': { $gte: startDateObj, $lt: new Date(endDateObj.setDate(endDateObj.getDate() + 1)) },
-    });
-
-    if (attendance.length === 0) {
-      return res.status(404).json({ message: 'Attendance record not found for this enrollmentNumber between these dates' });
-    }
-
-    const attendanceBetweenDates = attendance.map((record) => {
-      return {
-        enrollmentNumber: record.enrollmentNumber,
-        attendance: record.attendance,
-        date: record.date.toISOString().split('T')[0],
-      }
-    })
-
-    res.status(200).json({ success: true, data: attendanceBetweenDates });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-}
-
-
 exports.updateAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
@@ -129,3 +61,37 @@ exports.updateAttendance = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+
+
+// =========================================  Extra Work  ======================================================== 
+
+exports.getAttendanceBetweenTwoDates = async (req, res) => {
+  const { enrollmentNumber, startDate, endDate } = req.params;
+
+  try {
+    const attendance = await Attendance.find({
+      'enrollmentNumber': enrollmentNumber,
+      'date': { $gte: new Date(startDate), $lt: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)) },
+    });
+
+
+    if (attendance.length === 0) {
+      return res.status(404).json({ message: 'Attendance record not found for this enrollmentNumber on this date' });
+    }
+
+    const attendanceBetweenDates = attendance.map((record) => {
+      return {
+        enrollmentNumber: record.enrollmentNumber,
+        attendance: record.attendance,
+        date: record.date.toISOString().split('T')[0],
+      }
+    })
+
+    res.status(200).json({ success: true, data: attendanceBetweenDates });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+
+
