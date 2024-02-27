@@ -1,5 +1,6 @@
 const Attendance = require('../models/attendanceModel');
 
+// Create Attendance 
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
@@ -20,6 +21,7 @@ exports.addAttendance = async (req, res) => {
   }
 }
 
+// Read Attendance
 exports.getAttendanceByDate = async (req, res) => {
   const { date } = req.params;
 
@@ -42,6 +44,7 @@ exports.getAttendanceByDate = async (req, res) => {
   }
 }
 
+// Update Attendance
 exports.updateAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, date } = req.params;
@@ -66,8 +69,9 @@ exports.updateAttendance = async (req, res) => {
   }
 }
 
-// =========================================  Extra Work  ======================================================== 
+// ===============================================  Extra Work  ============================================================ 
 
+// Read enrollmentNumber records between two dates
 exports.getAttendanceBetweenTwoDates = async (req, res) => {
   const { enrollmentNumber, startDate, endDate } = req.params;
 

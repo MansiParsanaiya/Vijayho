@@ -22,7 +22,7 @@ exports.createEmployee = async (req, res) => {
         console.error('Error creating employee:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-};
+}
 
 // Read
 exports.getEmployee = async (req, res) => {
