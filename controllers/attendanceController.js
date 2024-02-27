@@ -6,12 +6,14 @@ exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
+    // Check if attendance record already exists for the enrollmentNumber and date
     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
 
     if (existingAttendance) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
 
+    // If the record doesn't exist for the given enrollmentNumber and date, save the new attendance record
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
     await studentAttendance.save();
 
@@ -22,31 +24,24 @@ exports.addAttendance = async (req, res) => {
   }
 }
 
+
 exports.getAttendanceByDate = async (req, res) => {
-  const { date, enrollmentNumber } = req.params;
+  const { date } = req.params;
 
   try {
     const students = await Attendance.find({
       'date': { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) },
-      'enrollmentNumber': enrollmentNumber,
-    })
+    });
 
     const attendanceByDate = students.map((student) => {
       return {
         enrollmentNumber: student.enrollmentNumber,
         attendance: student.attendance,
         date: student.date.toISOString().split('T')[0],
-      }
-    })
+      };
+    });
 
-    console.log(attendanceByDate)
-
-    if (!attendanceByDate.data) {
-      return res.status(404).json({ message: 'Attendance record not found for this enrollmentNumber on this date' });
-    }
-    else {
-      res.status(200).json({ success: true, data: attendanceByDate });
-    }
+    res.status(200).json({ success: true, data: attendanceByDate });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -70,15 +65,18 @@ exports.getAttendanceBetweenTwoDates = async (req, res) => {
       };
     });
 
+    if (attendanceBetweenDates.data) {
+      return res.status(404).json({ message: 'Attendance record not found for this enrollmentNumber on this date' });
+    }
+    else {
+      res.status(200).json({ success: true, data: attendanceBetweenDates })
+    }
 
-    res.status(200).json({ success: true, data: attendanceBetweenDates })
-
+    // res.status(200).json({ success: true, data: attendanceBetweenDates });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 }
-
-// http://localhost:8000/attendance/12/2024-02-26/2024-02-30
 
 exports.updateAttendance = async (req, res) => {
   try {
