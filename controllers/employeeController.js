@@ -65,7 +65,7 @@ exports.deleteEmployee = async (req, res) => {
         const employee = await Employee.findOneAndDelete({ enrollmentNumber });
 
         if (!employee) {
-            return res.status(404).send({ error: 'Employee not found' });
+            return res.status(404).send({ error: `Enrollment Number ${enrollmentNumber} does not exists :(` });
         }
 
         res.send({ message: `Enrollment Number ${enrollmentNumber} deleted successfully !` });
