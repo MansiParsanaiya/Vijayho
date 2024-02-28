@@ -1,28 +1,6 @@
 const Attendance = require('../models/attendanceModel');
 
 // Create Attendance 
-// exports.addAttendance = async (req, res) => {
-//   try {
-//     const { enrollmentNumber, attendance, date } = req.body;
-
-//     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
-
-//     if (existingAttendance) {
-//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
-//     }
-//     console.log(existingAttendance)
-
-//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
-//     await studentAttendance.save();
-
-//     res.json({ message: 'Attendance recorded successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// }
-
-
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
@@ -32,20 +10,17 @@ exports.addAttendance = async (req, res) => {
     if (existingAttendance) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
+    console.log(existingAttendance)
 
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
     await studentAttendance.save();
 
     res.json({ message: 'Attendance recorded successfully' });
   } catch (error) {
-    console.error('Error adding attendance:', error);
+    console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
-
-
-
-
 
 // Split method 
 // exports.addAttendance = async (req, res) => {
@@ -83,7 +58,6 @@ exports.addAttendance = async (req, res) => {
 
 
 // Read Attendance
-
 // exports.getAttendanceByDate = async (req, res) => {
 //   const { date } = req.params;
 
@@ -129,35 +103,35 @@ exports.getAttendanceByDate = async (req, res) => {
 }
 
 exports.searchUser = async (req, res) => {
-    const query = req.query.key;
+  const query = req.query.key;
 
-    if (!query) {
-        return res.status(400).json({ error: 'Query parameter "searchUser?key=" is required' });
+  if (!query) {
+    return res.status(400).json({ error: 'Query parameter "searchUser?key=" is required' });
+  }
+  try {
+    let results;
+    if (isNaN(query)) {
+      // http://localhost:4000/users/searchUser?key=qq
+      results = await User.find({
+        $or: [
+          { firstname: { $regex: new RegExp(query, 'i') } },
+          { lastname: { $regex: new RegExp(query, 'i') } },
+        ],
+      });
+    } else {
+      // http://localhost:4000/users/searchUser?key=12
+      results = await User.find({
+        $or: [
+          { age: { $eq: parseInt(query) } },
+          { phoneNo: { $eq: parseInt(query) } },
+        ],
+      });
     }
-    try {
-        let results;
-        if (isNaN(query)) {
-            // http://localhost:4000/users/searchUser?key=qq
-            results = await User.find({
-                $or: [
-                    { firstname: { $regex: new RegExp(query, 'i') } },
-                    { lastname: { $regex: new RegExp(query, 'i') } },
-                ],
-            });
-        } else {
-            // http://localhost:4000/users/searchUser?key=12
-            results = await User.find({
-                $or: [
-                    { age: { $eq: parseInt(query) } },
-                    { phoneNo: { $eq: parseInt(query) } },
-                ],
-            });
-        }
-        res.json(results);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+    res.json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 }
 
 // Update Attendance
