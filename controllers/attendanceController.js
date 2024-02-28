@@ -1,18 +1,98 @@
 const Attendance = require('../models/attendanceModel');
 
 // Create Attendance 
+// exports.addAttendance = async (req, res) => {
+//   try {
+//     const { enrollmentNumber, attendance, date } = req.body;
+
+//     console.log({ enrollmentNumber })
+//     console.log({ attendance })
+//     console.log({ date })
+//     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
+
+//     if (existingAttendance) {
+//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
+//     }
+//     console.log(existingAttendance)
+
+//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
+//     await studentAttendance.save();
+
+//     res.json({ message: 'Attendance recorded successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// }
+
+// Add Attendance
+// exports.addAttendance = async (req, res) => {
+//   try {
+//     let { enrollmentNumber, attendance, date } = req.body;
+
+//     if (!date) {
+//       date = new Date();
+//     } 
+//     else {
+//       date = new Date(date);
+//       if (isNaN(date.getTime())) {
+//         return res.status(400).json({ message: 'Invalid date format. Please provide a valid date.' });
+//       }
+//     }
+
+//     const formattedDate = date ? date.toISOString().split('T')[0] : null;
+//     console.log({ date: formattedDate })
+
+//     const existingAttendance = await Attendance.findOne({
+//       enrollmentNumber,
+//       date: { $gte: date, $lt: new Date(date.getTime() + 86400000) }, // Check for the same date
+//     })
+
+//     if (existingAttendance) {
+//       console.log("Existing Attendance:", existingAttendance);
+//       return res.status(400).json({ message: `Attendance record already exists for enrollment number ${enrollmentNumber} on ${date.toISOString().split('T')[0]}.` });
+//     }
+
+//     console.log(existingAttendance)
+
+//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
+//     await studentAttendance.save();
+
+//     res.json({ message: 'Attendance recorded successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// }
+
 exports.addAttendance = async (req, res) => {
   try {
-    const { enrollmentNumber, attendance, date } = req.body;
+    let { enrollmentNumber, attendance, date } = req.body;
 
-    console.log({enrollmentNumber})
-    console.log({date})
-    const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
+    // If date is not provided, default to current date
+    if (!date) {
+      date = new Date();
+    } else {
+      // Attempt to parse the provided date
+      date = new Date(date);
+      // Check if the provided date is valid
+      if (isNaN(date.getTime())) {
+        return res.status(400).json({ message: 'Invalid date format. Please provide a valid date.' });
+      }
+    }
+
+    const formattedDate = date.toISOString().split('T')[0];
+
+    const existingAttendance = await Attendance.findOne({
+      enrollmentNumber,
+      date: { $gte: formattedDate, $lt: new Date(date.getTime() + 86400000).toISOString().split('T')[0] },
+    });
 
     if (existingAttendance) {
-      return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
+      return res.status(400).json({ message: `Attendance record already exists for enrollment number ${enrollmentNumber} on ${formattedDate}.` });
     }
-    console.log(existingAttendance)
+
+    // console.log({ date: existingAttendance })    -> null
 
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
     await studentAttendance.save();
@@ -23,40 +103,6 @@ exports.addAttendance = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
-
-// Split method 
-// exports.addAttendance = async (req, res) => {
-//   try {
-//     const { enrollmentNumber, attendance, date } = req.body;
-//     const existingAttendance = await Attendance.findOne({ enrollmentNumber });
-
-//     console.log("i m calling outside if")
-
-//     if (existingAttendance) {
-//       // Log existing attendance details for debugging
-//       console.log('Existing Attendance:', existingAttendance);
-
-//       console.log("i m calling inside if")
-//       if (existingAttendance.date && existingAttendance.date.toISOString) {
-//         const existingDate = existingAttendance.date.toISOString().split('T')[0];
-//         const currentDate = date.toISOString().split('T')[0];
-
-//         // Check if there is an existing record with the same date part
-//         if (existingDate === currentDate) {
-//           return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
-//         }
-//       }
-//     }
-
-//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
-//     await studentAttendance.save();
-//     res.json({ message: 'Attendance recorded successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: `Internal Server Error ${error}` });
-//   }
-// }
-
 
 
 // Read Attendance
