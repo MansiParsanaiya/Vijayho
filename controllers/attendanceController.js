@@ -21,21 +21,17 @@ const Attendance = require('../models/attendanceModel');
 //   }
 // }
 
-
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
-    const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
+    const existingAttendance = await Attendance.findOne({
+      enrollmentNumber,
+      date: { $gte: new Date(date), $lt: new Date(date + 'T23:59:59.999Z') }
+    });
 
     if (existingAttendance) {
-      // Extract the date from existingAttendance using split method
-      const existingDate = existingAttendance.date.split('T')[0]; // Assuming date is in 'YYYY-MM-DD' format
-
-      // Compare the extracted date with the requested date
-      if (existingDate === date) {
-        return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
-      }
+      return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
 
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
@@ -47,6 +43,7 @@ exports.addAttendance = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+
 
 
 
