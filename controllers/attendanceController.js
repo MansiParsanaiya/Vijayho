@@ -225,7 +225,6 @@ exports.updateAttendance = async (req, res) => {
   }
 }
 
-
 // ===============================================  Extra Work  ============================================================ 
 
 // Read enrollmentNumber records between two dates
