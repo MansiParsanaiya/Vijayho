@@ -5,6 +5,8 @@ exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
+    console.log({enrollmentNumber})
+    console.log({date})
     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
 
     if (existingAttendance) {
