@@ -101,7 +101,7 @@ exports.updateAttendance = async (req, res) => {
     );
 
     if (!updatedAttendance) {
-      return res.status(404).json({ message: `Attendance record not found or already marked as ${req.body.attendance}` });
+      return res.status(404).json({ message: `Attendance record not found` });
     }
 
     console.log(updatedAttendance);
