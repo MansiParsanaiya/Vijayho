@@ -81,23 +81,19 @@ exports.updateAttendance = async (req, res) => {
       date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
     });
 
-    if (existingAttendance && existingAttendance.status === 'present') {
+    if (existingAttendance && existingAttendance.attendance === 'present' || existingAttendance && existingAttendance.attendance === 'absent') {
       return res.status(400).json({ message: 'Attendance is already marked as present.' });
     }
 
     // If not marked as present, proceed with the update
     const updatedAttendance = await Attendance.findOneAndUpdate(
-      {
-        enrollmentNumber,
-        date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
-        status: { $ne: 'present' }, // Make sure the status is not already 'present'
-      },
+      { enrollmentNumber, date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) } }, // This range selects the whole day of the given date
       { $set: req.body },
       { new: true }
     );
 
     if (!updatedAttendance) {
-      return res.status(404).json({ message: 'Attendance record not found or already marked as present' });
+      return res.status(404).json({ message: 'Attendance record not found or already marked' });
     }
 
     console.log(updatedAttendance);
