@@ -57,11 +57,12 @@ exports.updateEmployee = async (req, res) => {
     }
 }
 
+// Delete
 exports.deleteEmployee = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;
 
     try {
-        // Find the employee by enrollmentNumber and delete
+
         const employee = await Employee.findOneAndDelete({ enrollmentNumber });
 
         if (!employee) {
