@@ -21,15 +21,46 @@ const Attendance = require('../models/attendanceModel');
 //   }
 // }
 
+// exports.addAttendance = async (req, res) => {
+//   try {
+//     const { enrollmentNumber, attendance, date } = req.body;
+
+//     const existingAttendance = await Attendance.findOne({ enrollmentNumber });
+
+//     // Check if there is an existing record with the same date part
+//     if (existingAttendance && existingAttendance.date.toISOString().split('T')[0] === date.toISOString().split('T')[0]) {
+//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
+//     }
+
+//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
+//     await studentAttendance.save();
+
+//     res.json({ message: 'Attendance recorded successfully' });
+//   } 
+//   catch (error)
+//   {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// }
+
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
     const existingAttendance = await Attendance.findOne({ enrollmentNumber });
 
-    // Check if there is an existing record with the same date part
-    if (existingAttendance && existingAttendance.date.toISOString().split('T')[0] === date.toISOString().split('T')[0]) {
-      return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
+    if (existingAttendance) {
+      // Log existing attendance details for debugging
+      console.log('Existing Attendance:', existingAttendance);
+
+      const existingDate = existingAttendance.date.toISOString().split('T')[0];
+      const currentDate = date.toISOString().split('T')[0];
+
+      // Check if there is an existing record with the same date part
+      if (existingDate === currentDate) {
+        return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
+      }
     }
 
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
@@ -40,8 +71,7 @@ exports.addAttendance = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
-}
-
+};
 
 
 // Read Attendance
