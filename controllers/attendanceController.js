@@ -1,11 +1,35 @@
 const Attendance = require('../models/attendanceModel');
 
 // Create Attendance 
+// exports.addAttendance = async (req, res) => {
+//   try {
+//     const { enrollmentNumber, attendance, date } = req.body;
+
+//     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
+
+//     if (existingAttendance) {
+//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
+//     }
+
+//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
+//     await studentAttendance.save();
+
+//     res.json({ message: 'Attendance recorded successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// }
+
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
-    const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
+    // Normalize the date to remove the time component
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0);
+
+    const existingAttendance = await Attendance.findOne({ enrollmentNumber, date: normalizedDate });
 
     if (existingAttendance) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
@@ -19,7 +43,9 @@ exports.addAttendance = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
-}
+};
+
+
 
 // Read Attendance
 // exports.getAttendanceByDate = async (req, res) => {
@@ -67,6 +93,43 @@ exports.getAttendanceByDate = async (req, res) => {
   }
 }
 
+
+exports.searchUser = async (req, res) => {
+  const query = req.query.key;
+
+  if (!query) {
+      return res.status(400).json({ error: 'Query parameter "searchUser?key=" is required' });
+  }
+  try {
+      let results;
+      if (isNaN(query)) {
+          // http://localhost:4000/users/searchUser?key=qq
+          results = await User.find({
+              $or: [
+                  { firstname: { $regex: new RegExp(query, 'i') } },
+                  { lastname: { $regex: new RegExp(query, 'i') } },
+              ],
+          });
+      } else {
+          // http://localhost:4000/users/searchUser?key=12
+          results = await User.find({
+              $or: [
+                  { age: { $eq: parseInt(query) } },
+                  { phoneNo: { $eq: parseInt(query) } },
+              ],
+          });
+      }
+      res.json(results);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
+
+
+
 // Update Attendance
 exports.updateAttendance = async (req, res) => {
   try {
@@ -101,11 +164,6 @@ exports.updateAttendance = async (req, res) => {
       return res.status(404).json({ message: `Attendance record not found` });
     }
 
-    // Modify the date property to show only the date part without the time
-    if (updatedAttendance.date) {
-      updatedAttendance.date = new Date(updatedAttendance.date).toISOString().split('T')[0];
-    }
-    
     // console.log(updatedAttendance);
 
     return res.status(200).json({ message: `Enrollment Number ${enrollmentNumber} attendance updated successfully!`, data: updatedAttendance });
