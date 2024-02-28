@@ -27,25 +27,22 @@ exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
-    // Check if attendance already exists for the given enrollment number and date
     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
 
-    console.log(existingAttendance)
-    
     if (existingAttendance) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
 
-    // If attendance doesn't exist, save the new attendance record
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
     await studentAttendance.save();
 
     res.json({ message: 'Attendance recorded successfully' });
   } catch (error) {
-    console.error(error);
+    console.error('Error adding attendance:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+
 
 
 
