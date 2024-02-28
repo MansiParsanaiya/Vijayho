@@ -69,9 +69,9 @@ exports.addAttendance = async (req, res) => {
     res.json({ message: 'Attendance recorded successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ message: `Internal Server Error ${error}` });
   }
-};
+}
 
 
 // Read Attendance
