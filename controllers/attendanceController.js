@@ -28,7 +28,7 @@ exports.addAttendance = async (req, res) => {
     const existingAttendance = await Attendance.findOne({ enrollmentNumber });
 
     // Check if there is an existing record with the same date part
-    if (existingAttendance && existingAttendance.date.toISOString().split('T')[0] === date) {
+    if (existingAttendance && existingAttendance.date.toISOString().split('T')[0] === date.toISOString().split('T')[0]) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
 
