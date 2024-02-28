@@ -34,7 +34,7 @@ const Attendance = require('../models/attendanceModel');
 //     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date: { $gte: incomingDatePart, $lte: incomingDatePart } });
 
 //     if (existingAttendance) {
-//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' })
+//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
 //     }
 
 //     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
@@ -51,21 +51,24 @@ exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
-    const currentDate = new Date(); // Get current date
-    const currentDatePart = currentDate.toISOString().split('T')[0]; // Extract date part (YYYY-MM-DD)
+    const currentDate = new Date(); // Get current date and time
 
-    const incomingDatePart = date ? date.split('T')[0] : currentDatePart; // Extract date part of incoming date or use current date if not provided
+    // If the date is provided, use it; otherwise, use the current date
+    const incomingDate = date ? new Date(date) : currentDate;
 
     const existingAttendance = await Attendance.findOne({
       enrollmentNumber,
-      date: { $gte: new Date(incomingDatePart + 'T00:00:00.000Z'), $lte: new Date(incomingDatePart + 'T23:59:59.999Z') }
+      date: {
+        $gte: incomingDate, // Check greater than or equal to the provided/incoming date
+        $lt: new Date(incomingDate.getTime() + 24 * 60 * 60 * 1000) // Check less than the next day
+      }
     });
 
     if (existingAttendance) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
 
-    const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
+    const studentAttendance = new Attendance({ enrollmentNumber, attendance, date: incomingDate });
     await studentAttendance.save();
 
     res.json({ message: 'Attendance recorded successfully' });
@@ -74,7 +77,6 @@ exports.addAttendance = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
-
 
 
 // Read Attendance
@@ -155,10 +157,6 @@ exports.searchUser = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
-
-
-
-
 
 // Update Attendance
 exports.updateAttendance = async (req, res) => {
