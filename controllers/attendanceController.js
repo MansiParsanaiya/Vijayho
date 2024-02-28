@@ -69,105 +69,45 @@ exports.getAttendanceByDate = async (req, res) => {
 //   }
 // }
 
-
-// exports.updateAttendance = async (req, res) => {
-//   try {
-//     const { enrollmentNumber, date } = req.params;
-
-//     const updateDate = new Date(date);
-
-//     // Check if the attendance record exists for the given enrollment number and date
-//     const existingAttendance = await Attendance.findOne({
-//       enrollmentNumber,
-//       date: {
-//         $gte: updateDate,
-//         $lt: new Date(updateDate.getTime() + 86400000)
-//       }
-//     });
-
-//     if (!existingAttendance) {
-//       return res.status(404).json({ message: 'Attendance record not found' });
-//     }
-
-//     // Check if the attendance is already marked as present
-//     if (existingAttendance.status === 'present' && req.body.status === 'present') {
-//       return res.status(400).json({ message: 'Attendance record already marked as present' });
-//     }
-
-//     // Update the attendance record
-//     const updatedAttendance = await Attendance.findOneAndUpdate(
-//       {
-//         enrollmentNumber,
-//         date: {
-//           $gte: updateDate,
-//           $lt: new Date(updateDate.getTime() + 86400000)
-//         }
-//       },
-//       { $set: req.body },
-//       { new: true }
-//     );
-
-//     console.log(updatedAttendance);
-
-//     return res.status(200).json({
-//       message: `Enrollment Number ${enrollmentNumber} attendance updated successfully!`,
-//       data: updatedAttendance
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// }
-
-
 exports.updateAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, date } = req.params;
 
     const updateDate = new Date(date);
 
-    // Check if the attendance record exists for the given enrollment number and date
+    // Check if the attendance is already marked as present
     const existingAttendance = await Attendance.findOne({
       enrollmentNumber,
-      date: {
-        $gte: updateDate,
-        $lt: new Date(updateDate.getTime() + 86400000)
-      }
+      date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
     });
 
-    if (!existingAttendance) {
-      return res.status(404).json({ message: 'Attendance record not found' });
+    if (existingAttendance && existingAttendance.status === 'present') {
+      return res.status(400).json({ message: 'Attendance is already marked as present.' });
     }
 
-    // Check if the attendance is already marked as present
-    if (existingAttendance.status === 'present' && req.body.status === 'present') {
-      return res.status(400).json({ message: 'Attendance record already marked as present' });
-    }
-
-    // Update the attendance record
+    // If not marked as present, proceed with the update
     const updatedAttendance = await Attendance.findOneAndUpdate(
       {
         enrollmentNumber,
-        date: {
-          $gte: updateDate,
-          $lt: new Date(updateDate.getTime() + 86400000)
-        }
+        date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
+        status: { $ne: 'present' }, // Make sure the status is not already 'present'
       },
       { $set: req.body },
       { new: true }
     );
 
+    if (!updatedAttendance) {
+      return res.status(404).json({ message: 'Attendance record not found or already marked as present' });
+    }
+
     console.log(updatedAttendance);
 
-    return res.status(200).json({
-      message: `Enrollment Number ${enrollmentNumber} attendance updated successfully!`,
-      data: updatedAttendance
-    });
+    return res.status(200).json({ message: `Enrollment Number ${enrollmentNumber} attendance updated successfully!`, data: updatedAttendance });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}
 
 
 
