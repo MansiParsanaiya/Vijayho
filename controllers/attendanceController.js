@@ -49,11 +49,14 @@ exports.addAttendance = async (req, res) => {
     const { enrollmentNumber, attendance, date } = req.body;
     const existingAttendance = await Attendance.findOne({ enrollmentNumber });
 
+    console.log("i m calling outside if")
+
     if (existingAttendance) {
       // Log existing attendance details for debugging
       console.log('Existing Attendance:', existingAttendance);
 
-      if (existingAttendance.date) {
+      console.log("i m calling inside if")
+      if (existingAttendance.date && existingAttendance.date.toISOString) {
         const existingDate = existingAttendance.date.toISOString().split('T')[0];
         const currentDate = date.toISOString().split('T')[0];
 
