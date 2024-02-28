@@ -34,7 +34,7 @@ exports.addAttendance = async (req, res) => {
     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date: { $gte: incomingDatePart, $lte: incomingDatePart } });
 
     if (existingAttendance) {
-      return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
+      return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' })
     }
 
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
