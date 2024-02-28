@@ -22,6 +22,31 @@ const Attendance = require('../models/attendanceModel');
 // }
 
 
+// exports.addAttendance = async (req, res) => {
+//   try {
+//     const { enrollmentNumber, attendance, date } = req.body;
+
+//     const currentDate = new Date(); // Get current date
+//     const currentDatePart = currentDate.toISOString().split('T')[0]; // Extract date part (YYYY-MM-DD)
+
+//     const incomingDatePart = date ? date.split('T')[0] : currentDatePart; // Extract date part of incoming date or use current date if not provided
+
+//     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date: { $gte: incomingDatePart, $lte: incomingDatePart } });
+
+//     if (existingAttendance) {
+//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' })
+//     }
+
+//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
+//     await studentAttendance.save();
+
+//     res.json({ message: 'Attendance recorded successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// }
+
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
@@ -31,10 +56,13 @@ exports.addAttendance = async (req, res) => {
 
     const incomingDatePart = date ? date.split('T')[0] : currentDatePart; // Extract date part of incoming date or use current date if not provided
 
-    const existingAttendance = await Attendance.findOne({ enrollmentNumber, date: { $gte: incomingDatePart, $lte: incomingDatePart } });
+    const existingAttendance = await Attendance.findOne({
+      enrollmentNumber,
+      date: { $gte: new Date(incomingDatePart + 'T00:00:00.000Z'), $lte: new Date(incomingDatePart + 'T23:59:59.999Z') }
+    });
 
     if (existingAttendance) {
-      return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' })
+      return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
 
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
