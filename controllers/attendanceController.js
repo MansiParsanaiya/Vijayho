@@ -25,12 +25,10 @@ exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
-    const existingAttendance = await Attendance.findOne({
-      enrollmentNumber,
-      date: { $gte: new Date(date), $lt: new Date(date + 'T23:59:59.999Z') }
-    });
+    const existingAttendance = await Attendance.findOne({ enrollmentNumber });
 
-    if (existingAttendance) {
+    // Check if there is an existing record with the same date part
+    if (existingAttendance && existingAttendance.date.toISOString().split('T')[0] === date) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
 
@@ -43,7 +41,6 @@ exports.addAttendance = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
-
 
 
 
