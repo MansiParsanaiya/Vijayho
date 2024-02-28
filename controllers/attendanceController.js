@@ -22,6 +22,29 @@ exports.addAttendance = async (req, res) => {
 }
 
 // Read Attendance
+// exports.getAttendanceByDate = async (req, res) => {
+//   const { date } = req.params;
+
+//   try {
+//     const students = await Attendance.find({
+//       'date': { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) },
+//     });
+
+//     const attendanceByDate = students.map((student) => {
+//       return {
+//         enrollmentNumber: student.enrollmentNumber,
+//         attendance: student.attendance,
+//         date: student.date.toISOString().split('T')[0],
+//       };
+//     });
+
+//     res.status(200).json({ success: true, data: attendanceByDate });
+//   } catch (error) {
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// }
+
+
 exports.getAttendanceByDate = async (req, res) => {
   const { date } = req.params;
 
@@ -77,6 +100,9 @@ exports.updateAttendance = async (req, res) => {
     if (!updatedAttendance) {
       return res.status(404).json({ message: `Attendance record not found` });
     }
+    
+    // Format the date to display without time
+    updatedAttendance.date = updatedAttendance.date.toISOString().slice(0, 10);
 
     // console.log(updatedAttendance);
 
@@ -86,8 +112,6 @@ exports.updateAttendance = async (req, res) => {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-
-
 
 
 // ===============================================  Extra Work  ============================================================ 
