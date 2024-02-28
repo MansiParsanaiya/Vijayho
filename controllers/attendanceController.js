@@ -1,17 +1,40 @@
 const Attendance = require('../models/attendanceModel');
 
 // Create Attendance 
+// exports.addAttendance = async (req, res) => {
+//   try {
+//     const { enrollmentNumber, attendance, date } = req.body;
+
+//     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
+
+//     if (existingAttendance) {
+//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
+//     }
+//     console.log(existingAttendance)
+
+//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
+//     await studentAttendance.save();
+
+//     res.json({ message: 'Attendance recorded successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// }
+
+
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
+    // Check if attendance already exists for the given enrollment number and date
     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
 
     if (existingAttendance) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
-    console.log(existingAttendance)
 
+    // If attendance doesn't exist, save the new attendance record
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
     await studentAttendance.save();
 
@@ -21,6 +44,9 @@ exports.addAttendance = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+
+
+
 
 // Split method 
 // exports.addAttendance = async (req, res) => {
