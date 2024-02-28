@@ -82,10 +82,10 @@ exports.updateAttendance = async (req, res) => {
     });
 
     if (existingAttendance) {
-      const { status } = existingAttendance;
+      const { attendance } = existingAttendance;
 
-      if (status === req.body.status) {
-        return res.status(400).json({ message: `Attendance is already marked as ${req.body.status}.` });
+      if (attendance === req.body.attendance) {
+        return res.status(400).json({ message: `Attendance is already marked as ${req.body.attendance}.` });
       }
     }
 
@@ -94,14 +94,14 @@ exports.updateAttendance = async (req, res) => {
       {
         enrollmentNumber,
         date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
-        status: { $ne: req.body.status }, // Make sure the status is not already the same
+        attendance: { $ne: req.body.attendance }, // Make sure the status is not already the same
       },
       { $set: req.body },
       { new: true }
     );
 
     if (!updatedAttendance) {
-      return res.status(404).json({ message: `Attendance record not found or already marked as ${req.body.status}` });
+      return res.status(404).json({ message: `Attendance record not found or already marked as ${req.body.attendance}` });
     }
 
     console.log(updatedAttendance);
