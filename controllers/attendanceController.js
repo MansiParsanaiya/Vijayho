@@ -68,51 +68,6 @@ exports.getAttendanceByDate = async (req, res) => {
 }
 
 // Update Attendance
-// exports.updateAttendance = async (req, res) => {
-//   try {
-//     const { enrollmentNumber, date } = req.params;
-
-//     const updateDate = new Date(date);
-
-//     const existingAttendance = await Attendance.findOne({
-//       enrollmentNumber,
-//       date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
-//     });
-
-//     if (existingAttendance) {
-//       const { attendance } = existingAttendance;
-
-//       if (attendance === req.body.attendance) {
-//         return res.status(400).json({ message: `Attendance is already marked as ${req.body.attendance}.` });
-//       }
-//     }
-
-//     const updatedAttendance = await Attendance.findOneAndUpdate(
-//       {
-//         enrollmentNumber,
-//         date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
-//         attendance: { $ne: req.body.attendance },
-//       },
-//       { $set: req.body },
-//       { new: true }
-//     );
-
-//     if (!updatedAttendance) {
-//       return res.status(404).json({ message: `Attendance record not found` });
-//     }
-    
-//     // Format the date to display without time
-//     updatedAttendance.date = updatedAttendance.date.toISOString().slice(0, 10);
-
-//     // console.log(updatedAttendance);
-
-//     return res.status(200).json({ message: `Enrollment Number ${enrollmentNumber} attendance updated successfully!`, data: updatedAttendance });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// };
-
 exports.updateAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, date } = req.params;
@@ -140,15 +95,17 @@ exports.updateAttendance = async (req, res) => {
       },
       { $set: req.body },
       { new: true }
-    );
+    )
 
     if (!updatedAttendance) {
       return res.status(404).json({ message: `Attendance record not found` });
     }
 
-    // Format the date to display without time
-    updatedAttendance.date = updatedAttendance.date.toISOString().slice(0, 10);
-
+    // Modify the date property to show only the date part without the time
+    if (updatedAttendance.date) {
+      updatedAttendance.date = new Date(updatedAttendance.date).toISOString().split('T')[0];
+    }
+    
     // console.log(updatedAttendance);
 
     return res.status(200).json({ message: `Enrollment Number ${enrollmentNumber} attendance updated successfully!`, data: updatedAttendance });
@@ -156,7 +113,7 @@ exports.updateAttendance = async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}
 
 
 // ===============================================  Extra Work  ============================================================ 
