@@ -1,73 +1,17 @@
 const Attendance = require('../models/attendanceModel');
 
 // Create Attendance 
-// exports.addAttendance = async (req, res) => {
-//   try {
-//     const { enrollmentNumber, attendance, date } = req.body;
-
-//     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
-
-//     if (existingAttendance) {
-//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
-//     }
-
-//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
-//     await studentAttendance.save();
-
-//     res.json({ message: 'Attendance recorded successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// }
-
-// exports.addAttendance = async (req, res) => {
-//   try {
-//     const { enrollmentNumber, attendance, date } = req.body;
-
-//     const currentDate = new Date(); // Get current date
-//     const currentDatePart = currentDate.toISOString().split('T')[0]; // Extract date part (YYYY-MM-DD)
-
-//     const incomingDatePart = date ? date.split('T')[0] : currentDatePart; // Extract date part of incoming date or use current date if not provided
-
-//     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date: { $gte: incomingDatePart, $lte: incomingDatePart } });
-
-//     if (existingAttendance) {
-//       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
-//     }
-
-//     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
-//     await studentAttendance.save();
-
-//     res.json({ message: 'Attendance recorded successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// }
-
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
-    const currentDate = new Date(); // Get current date and time
-
-    // If the date is provided, use it; otherwise, use the current date
-    const incomingDate = date ? new Date(date) : currentDate;
-
-    const existingAttendance = await Attendance.findOne({
-      enrollmentNumber,
-      date: {
-        $gte: incomingDate, // Check greater than or equal to the provided/incoming date
-        $lt: new Date(incomingDate.getTime()) // Check less than the next day
-      }
-    });
+    const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
 
     if (existingAttendance) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }
 
-    const studentAttendance = new Attendance({ enrollmentNumber, attendance, date: incomingDate });
+    const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
     await studentAttendance.save();
 
     res.json({ message: 'Attendance recorded successfully' });
@@ -76,6 +20,7 @@ exports.addAttendance = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+
 
 
 // Read Attendance
@@ -101,7 +46,6 @@ exports.addAttendance = async (req, res) => {
 //   }
 // }
 
-
 exports.getAttendanceByDate = async (req, res) => {
   const { date } = req.params;
 
@@ -123,7 +67,6 @@ exports.getAttendanceByDate = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 }
-
 
 exports.searchUser = async (req, res) => {
     const query = req.query.key;
