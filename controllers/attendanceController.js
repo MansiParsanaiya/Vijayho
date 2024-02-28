@@ -30,6 +30,8 @@ exports.addAttendance = async (req, res) => {
     // Check if attendance already exists for the given enrollment number and date
     const existingAttendance = await Attendance.findOne({ enrollmentNumber, date });
 
+    console.log(existingAttendance)
+    
     if (existingAttendance) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
     }

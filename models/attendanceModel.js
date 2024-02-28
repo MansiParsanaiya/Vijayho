@@ -8,7 +8,6 @@ const attendanceSchema = new mongoose.Schema({
 });
 
 
-attendanceSchema.index({ enrollmentNumber: 1, date: 1 }, { unique: true });
 const Attendance = mongoose.model('Attendance', attendanceSchema);
 
 module.exports = Attendance;
