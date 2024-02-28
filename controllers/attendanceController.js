@@ -75,25 +75,33 @@ exports.updateAttendance = async (req, res) => {
 
     const updateDate = new Date(date);
 
-    // Check if the attendance is already marked as present
+    // Check if the attendance is already marked as present or absent
     const existingAttendance = await Attendance.findOne({
       enrollmentNumber,
       date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
     });
 
-    if (existingAttendance && existingAttendance.attendance === 'present' || existingAttendance && existingAttendance.attendance === 'absent') {
-      return res.status(400).json({ message: 'Attendance is already marked as present.' });
+    if (existingAttendance) {
+      const { status } = existingAttendance;
+
+      if (status === req.body.status) {
+        return res.status(400).json({ message: `Attendance is already marked as ${req.body.status}.` });
+      }
     }
 
-    // If not marked as present, proceed with the update
+    // If not marked as present or absent, proceed with the update
     const updatedAttendance = await Attendance.findOneAndUpdate(
-      { enrollmentNumber, date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) } }, // This range selects the whole day of the given date
+      {
+        enrollmentNumber,
+        date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
+        status: { $ne: req.body.status }, // Make sure the status is not already the same
+      },
       { $set: req.body },
       { new: true }
     );
 
     if (!updatedAttendance) {
-      return res.status(404).json({ message: 'Attendance record not found or already marked' });
+      return res.status(404).json({ message: `Attendance record not found or already marked as ${req.body.status}` });
     }
 
     console.log(updatedAttendance);
@@ -103,7 +111,7 @@ exports.updateAttendance = async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
-}
+};
 
 
 
