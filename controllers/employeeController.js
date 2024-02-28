@@ -25,14 +25,67 @@ exports.createEmployee = async (req, res) => {
 }
 
 // Read
+// exports.getEmployee = async (req, res) => {
+//     try {
+//         const employees = await Employee.find();
+//         res.status(200).json(employees);
+//     } catch (error) {
+//         res.status(500).json(error);
+//     }
+// }
+
+// exports.getEmployee = async (req, res) => {
+//     const { search } = req.query;
+
+//     try {
+//         let query = {};
+
+//         // Add search functionality if search query parameter is provided
+//         if (search) {
+//             const searchRegex = new RegExp(search, 'i'); // Case-insensitive regex for searching
+//             query.$or = [
+//                 { name: searchRegex }, // Search by name
+//                 { employeeId: searchRegex }, // Search by employeeId
+//                 // Add more fields as needed for searching
+//             ];
+//         }
+
+//         const employees = await Employee.find(query);
+//         res.status(200).json(employees);
+//     } catch (error) {
+//         res.status(500).json(error);
+//     }
+// }
+
 exports.getEmployee = async (req, res) => {
+    const { search } = req.query;
+
     try {
-        const employees = await Employee.find();
+        let query = {};
+
+        // Add search functionality if search query parameter is provided
+        if (search) {
+            const searchTerm = parseInt(search); // Convert search term to an integer
+            if (!isNaN(searchTerm)) {
+                query.employeeId = { $lte: searchTerm }; // Find records where employeeId is less than or equal to the search term
+            } else {
+                const searchRegex = new RegExp(search, 'i'); // Case-insensitive regex for searching
+                query.$or = [
+                    { name: searchRegex }, // Search by name
+                    // Add more fields as needed for searching
+                ];
+            }
+        }
+
+        const employees = await Employee.find(query);
         res.status(200).json(employees);
     } catch (error) {
         res.status(500).json(error);
     }
 }
+
+
+
 
 // Update 
 exports.updateEmployee = async (req, res) => {
@@ -73,5 +126,57 @@ exports.deleteEmployee = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send({ error: 'Server error' });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports.searchUser = async (req, res) => {
+    const query = req.query.key;
+
+    if (!query) {
+        return res.status(400).json({ error: 'Query parameter "searchUser?key=" is required' });
+    }
+    try {
+        let results;
+        if (isNaN(query)) {
+            // http://localhost:4000/users/searchUser?key=qq
+            results = await User.find({
+                $or: [
+                    { firstname: { $regex: new RegExp(query, 'i') } },
+                    { lastname: { $regex: new RegExp(query, 'i') } },
+                ],
+            });
+        } else {
+            // http://localhost:4000/users/searchUser?key=12
+            results = await User.find({
+                $or: [
+                    { age: { $eq: parseInt(query) } },
+                    { phoneNo: { $eq: parseInt(query) } },
+                ],
+            });
+        }
+        res.json(results);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 }
