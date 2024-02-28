@@ -55,7 +55,7 @@ exports.addAttendance = async (req, res) => {
       console.log('Existing Attendance:', existingAttendance);
 
       const existingDate = existingAttendance.date.toISOString().split('T')[0];
-      const currentDate = date;
+      const currentDate = date.toISOString().split('T')[0];
 
       // Check if there is an existing record with the same date part
       if (existingDate === currentDate) {
