@@ -21,15 +21,17 @@ const Attendance = require('../models/attendanceModel');
 //   }
 // }
 
+
 exports.addAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, attendance, date } = req.body;
 
-    // Normalize the date to remove the time component
-    const normalizedDate = new Date(date);
-    normalizedDate.setHours(0, 0, 0, 0);
+    const currentDate = new Date(); // Get current date
+    const currentDatePart = currentDate.toISOString().split('T')[0]; // Extract date part (YYYY-MM-DD)
 
-    const existingAttendance = await Attendance.findOne({ enrollmentNumber, date: normalizedDate });
+    const incomingDatePart = date ? date.split('T')[0] : currentDatePart; // Extract date part of incoming date or use current date if not provided
+
+    const existingAttendance = await Attendance.findOne({ enrollmentNumber, date: { $gte: incomingDatePart, $lte: incomingDatePart } });
 
     if (existingAttendance) {
       return res.status(400).json({ message: 'Attendance already recorded for this enrollmentNumber on this date' });
@@ -43,7 +45,7 @@ exports.addAttendance = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
-};
+}
 
 
 
@@ -95,35 +97,35 @@ exports.getAttendanceByDate = async (req, res) => {
 
 
 exports.searchUser = async (req, res) => {
-  const query = req.query.key;
+    const query = req.query.key;
 
-  if (!query) {
-      return res.status(400).json({ error: 'Query parameter "searchUser?key=" is required' });
-  }
-  try {
-      let results;
-      if (isNaN(query)) {
-          // http://localhost:4000/users/searchUser?key=qq
-          results = await User.find({
-              $or: [
-                  { firstname: { $regex: new RegExp(query, 'i') } },
-                  { lastname: { $regex: new RegExp(query, 'i') } },
-              ],
-          });
-      } else {
-          // http://localhost:4000/users/searchUser?key=12
-          results = await User.find({
-              $or: [
-                  { age: { $eq: parseInt(query) } },
-                  { phoneNo: { $eq: parseInt(query) } },
-              ],
-          });
-      }
-      res.json(results);
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
-  }
+    if (!query) {
+        return res.status(400).json({ error: 'Query parameter "searchUser?key=" is required' });
+    }
+    try {
+        let results;
+        if (isNaN(query)) {
+            // http://localhost:4000/users/searchUser?key=qq
+            results = await User.find({
+                $or: [
+                    { firstname: { $regex: new RegExp(query, 'i') } },
+                    { lastname: { $regex: new RegExp(query, 'i') } },
+                ],
+            });
+        } else {
+            // http://localhost:4000/users/searchUser?key=12
+            results = await User.find({
+                $or: [
+                    { age: { $eq: parseInt(query) } },
+                    { phoneNo: { $eq: parseInt(query) } },
+                ],
+            });
+        }
+        res.json(results);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 
