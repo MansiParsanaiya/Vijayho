@@ -45,37 +45,12 @@ exports.getAttendanceByDate = async (req, res) => {
 }
 
 // Update Attendance
-// exports.updateAttendance = async (req, res) => {
-//   try {
-//     const { enrollmentNumber, date } = req.params;
-
-//     const updateDate = new Date(date);
-
-//     const updatedAttendance = await Attendance.findOneAndUpdate(
-//       { enrollmentNumber, date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) } }, // This range selects the whole day of the given date
-//       { $set: req.body },
-//       { new: true }
-//     );
-
-//     if (!updatedAttendance) {
-//       return res.status(404).json({ message: 'Attendance record not found' });
-//     }
-//     console.log(updatedAttendance)
-
-//     return res.status(200).json({ message: `Entrollment Number ${enrollmentNumber} attendance updated successfully !`, data: updatedAttendance });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// }
-
 exports.updateAttendance = async (req, res) => {
   try {
     const { enrollmentNumber, date } = req.params;
 
     const updateDate = new Date(date);
 
-    // Check if the attendance is already marked as present or absent
     const existingAttendance = await Attendance.findOne({
       enrollmentNumber,
       date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
@@ -89,12 +64,11 @@ exports.updateAttendance = async (req, res) => {
       }
     }
 
-    // If not marked as present or absent, proceed with the update
     const updatedAttendance = await Attendance.findOneAndUpdate(
       {
         enrollmentNumber,
         date: { $gte: updateDate, $lt: new Date(updateDate.getTime() + 86400000) },
-        attendance: { $ne: req.body.attendance }, // Make sure the status is not already the same
+        attendance: { $ne: req.body.attendance },
       },
       { $set: req.body },
       { new: true }
@@ -104,7 +78,7 @@ exports.updateAttendance = async (req, res) => {
       return res.status(404).json({ message: `Attendance record not found` });
     }
 
-    console.log(updatedAttendance);
+    // console.log(updatedAttendance);
 
     return res.status(200).json({ message: `Enrollment Number ${enrollmentNumber} attendance updated successfully!`, data: updatedAttendance });
   } catch (error) {
