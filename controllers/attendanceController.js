@@ -21,7 +21,6 @@ const Attendance = require('../models/attendanceModel');
 //   }
 // }
 
-
 // exports.addAttendance = async (req, res) => {
 //   try {
 //     const { enrollmentNumber, attendance, date } = req.body;
@@ -60,7 +59,7 @@ exports.addAttendance = async (req, res) => {
       enrollmentNumber,
       date: {
         $gte: incomingDate, // Check greater than or equal to the provided/incoming date
-        $lt: new Date(incomingDate.getTime() + 24 * 60 * 60 * 1000) // Check less than the next day
+        $lt: new Date(incomingDate.getTime()) // Check less than the next day
       }
     });
 
