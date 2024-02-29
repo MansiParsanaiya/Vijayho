@@ -36,6 +36,29 @@ exports.createEmployee = async (req, res) => {
 //     }
 // }
 
+exports.getEmployeeAttendance = async (req, res) => {
+    try {
+        const employees = await Employee.find();
+
+        // Loop through each employee and populate attendance field
+        for (let i = 0; i < employees.length; i++) {
+            const employee = employees[i];
+            const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
+
+            // If attendance data exists, assign it to the employee
+            if (attendanceData) {
+                employee.attendance = attendanceData.attendance;
+            } else {
+                // If no attendance data, assign null
+                employee.attendance = null;
+            }
+        }
+
+        res.status(200).json(employees);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
 
 // Get employee by key
 exports.getEmployee = async (req, res) => {

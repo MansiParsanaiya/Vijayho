@@ -10,6 +10,8 @@ const { totalEmployee } = require('../controllers/homeController');
 // Read
 router.get('/getEmployee', employeeController.getEmployee);
 
+router.get('/getEmployeeAttendance', employeeController.getEmployeeAttendance);
+
 // Create
 router.post('/postEmployee', employeeController.createEmployee);
 
