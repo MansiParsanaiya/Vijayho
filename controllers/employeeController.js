@@ -97,7 +97,7 @@ exports.getEmployee = async (req, res) => {
         const results = await Employee.find(query);
 
         if (results.length > 0) {
-            res.json({ data: results });
+            res.json(results);
         }
         else {
             res.json({ data: "No Data Found for the given value" });

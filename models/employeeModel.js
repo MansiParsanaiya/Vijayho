@@ -13,7 +13,6 @@ const employeeSchema = new mongoose.Schema({
         perDay: Number,
         perMonth: Number,
     },
-    
 });
 
 const Employee = mongoose.model('Employee', employeeSchema);
