@@ -5,11 +5,11 @@ var router = express.Router();
 const employeeController = require('../controllers/employeeController');
 const { totalEmployee } = require('../controllers/homeController');
 
-// Routes
 
 // Read
 router.get('/getEmployee', employeeController.getEmployee);
 
+// Get Employee Attedance
 router.get('/getEmployeeAttendance', employeeController.getEmployeeAttendance);
 
 // Create

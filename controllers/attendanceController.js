@@ -6,7 +6,7 @@ const Employee = require("../models/employeeModel");
 exports.addAttendance = async (req, res) => {
   try 
   {
-    let { enrollmentNumber, attendance, date, name } = req.body;
+    let { enrollmentNumber, attendance, date } = req.body;
 
     if (!date) 
     {
@@ -42,7 +42,7 @@ exports.addAttendance = async (req, res) => {
       date: { $gte: formattedDate, $lt: new Date(date.getTime() + 86400000).toISOString().split('T')[0] },
     })
 
-    const studentAttendance = new Attendance({ enrollmentNumber, attendance, date, name });
+    const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
     await studentAttendance.save();
 
     res.json({ message: 'Attendance recorded successfully' });
@@ -64,7 +64,6 @@ exports.getAttendanceByDate = async (req, res) => {
     const attendanceByDate = students.map((student) => {
       return {
         enrollmentNumber: student.enrollmentNumber,
-        name: student.name,
         attendance: student.attendance,
         date: student.date.toISOString().split('T')[0],
       };

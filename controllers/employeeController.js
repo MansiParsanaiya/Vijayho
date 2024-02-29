@@ -2,7 +2,7 @@ const Employee = require("../models/employeeModel");
 const Attendance = require('../models/attendanceModel');
 
 
-// Create
+// Create Employee
 exports.createEmployee = async (req, res) => {
     try {
 
@@ -36,25 +36,23 @@ exports.createEmployee = async (req, res) => {
 //     }
 // }
 
+
+// Get Employee Attedance
 exports.getEmployeeAttendance = async (req, res) => {
     try {
         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
 
-        // Loop through each employee and populate attendance field
         for (let i = 0; i < employees.length; i++) {
             const employee = employees[i];
             const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
 
-            // If attendance data exists, assign it to the employee
             if (attendanceData) {
                 employee.attendance = attendanceData.attendance;
             } else {
-                // If no attendance data, assign null
                 employee.attendance = null;
             }
         }
 
-        // Map the employees array to keep only desired fields
         const formattedEmployees = employees.map(employee => ({
             enrollmentNumber: employee.enrollmentNumber,
             name: employee.name,
@@ -68,8 +66,7 @@ exports.getEmployeeAttendance = async (req, res) => {
     }
 }
 
-
-// Get employee by key
+// Search Employee by key
 exports.getEmployee = async (req, res) => {
     try {
         let query = {};
@@ -112,7 +109,7 @@ exports.getEmployee = async (req, res) => {
     }
 }
 
-// Update 
+// Update Employee
 exports.updateEmployee = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;
     const updateFields = req.body;
@@ -135,7 +132,7 @@ exports.updateEmployee = async (req, res) => {
     }
 }
 
-// Delete
+// Delete Employee
 exports.deleteEmployee = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;
 
