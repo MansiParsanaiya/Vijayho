@@ -38,7 +38,7 @@ exports.createEmployee = async (req, res) => {
 
 exports.getEmployeeAttendance = async (req, res) => {
     try {
-        const employees = await Employee.find();
+        const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
 
         // Loop through each employee and populate attendance field
         for (let i = 0; i < employees.length; i++) {
@@ -54,11 +54,20 @@ exports.getEmployeeAttendance = async (req, res) => {
             }
         }
 
-        res.status(200).json(employees);
+        // Map the employees array to keep only desired fields
+        const formattedEmployees = employees.map(employee => ({
+            enrollmentNumber: employee.enrollmentNumber,
+            name: employee.name,
+            mobileNumber: employee.mobileNumber,
+            attendance: employee.attendance
+        }));
+
+        res.status(200).json(formattedEmployees);
     } catch (error) {
         res.status(500).json(error);
     }
 }
+
 
 // Get employee by key
 exports.getEmployee = async (req, res) => {
