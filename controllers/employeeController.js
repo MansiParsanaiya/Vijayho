@@ -1,4 +1,6 @@
 const Employee = require("../models/employeeModel");
+const Attendance = require('../models/attendanceModel');
+
 
 // Create
 exports.createEmployee = async (req, res) => {
@@ -24,7 +26,7 @@ exports.createEmployee = async (req, res) => {
     }
 }
 
-// Read
+// Read all employee
 // exports.getEmployee = async (req, res) => {
 //     try {
 //         const employees = await Employee.find();
@@ -34,53 +36,84 @@ exports.createEmployee = async (req, res) => {
 //     }
 // }
 
-// exports.getEmployee = async (req, res) => {
-//     const { search } = req.query;
-
-//     try {
-//         let query = {};
-
-//         // Add search functionality if search query parameter is provided
-//         if (search) {
-//             const searchRegex = new RegExp(search, 'i'); // Case-insensitive regex for searching
-//             query.$or = [
-//                 { name: searchRegex }, // Search by name
-//                 { employeeId: searchRegex }, // Search by employeeId
-//                 // Add more fields as needed for searching
-//             ];
-//         }
-
-//         const employees = await Employee.find(query);
-//         res.status(200).json(employees);
-//     } catch (error) {
-//         res.status(500).json(error);
-//     }
-// }
-
+// Get employee by key
 exports.getEmployee = async (req, res) => {
-    const { search } = req.query;
-
     try {
         let query = {};
 
-        if (search) {
-            const searchTerm = parseInt(search);
-            if (!isNaN(searchTerm)) {
-                query.employeeId = { $lte: searchTerm };
-            } else {
-                const searchRegex = new RegExp(search, 'i');
-                query.$or = [
-                    { name: searchRegex },
-                ];
+        if (req.query.value) {
+            const value = req.query.value;
+
+            if (req.query.key) {
+                const searchField = req.query.key;
+
+                if (searchField === 'enrollmentNumber' || searchField === 'name' || searchField === 'mobileNumber') {
+                    query[searchField] = { $regex: new RegExp(value, 'i') };
+                } else {
+                    return res.status(400).json({ error: 'Invalid search field' });
+                }
+            }
+            else {
+                query = {
+                    $or: [
+                        { enrollmentNumber: { $regex: new RegExp(value, 'i') } },
+                        { name: { $regex: new RegExp(value, 'i') } },
+                        { mobileNumber: { $regex: new RegExp(value, 'i') } },
+                    ],
+                };
             }
         }
 
-        const employees = await Employee.find(query);
-        res.status(200).json(employees);
+        const results = await Employee.find(query);
+
+        if (results.length > 0) {
+            res.json({ data: results });
+        }
+        else {
+            res.json({ data: "No Data Found for the given value" });
+        }
+
     } catch (error) {
-        res.status(500).json(error);
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+
+exports.getEmployeeAttendance = async (req, res) => {
+    try {
+        const { enrollmentNumber } = req.params;
+
+        // Check if the employee with the given enrollment number exists
+        const employee = await Employee.findOne({ enrollmentNumber });
+
+        if (!employee) {
+            return res.status(404).json({ message: `Employee with enrollment number ${enrollmentNumber} not found.` });
+        }
+
+        // Fetch attendance records for the employee
+        const attendanceRecords = await Attendance.find({ enrollmentNumber });
+
+        // Create a response object with employee details and attendance information
+        const response = {
+            enrollmentNumber: employee.enrollmentNumber,
+            name: employee.name,
+            mobileNumber: employee.mobileNumber,
+            attendance: attendanceRecords.length > 0 ? attendanceRecords : null,
+        };
+
+        res.status(200).json(response);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+
+
+
+
 
 
 // Update 
@@ -145,34 +178,16 @@ exports.deleteEmployee = async (req, res) => {
 
 
 
-exports.searchUser = async (req, res) => {
-    const query = req.query.key;
 
-    if (!query) {
-        return res.status(400).json({ error: 'Query parameter "searchUser?key=" is required' });
-    }
-    try {
-        let results;
-        if (isNaN(query)) {
-            // http://localhost:4000/users/searchUser?key=qq
-            results = await User.find({
-                $or: [
-                    { firstname: { $regex: new RegExp(query, 'i') } },
-                    { lastname: { $regex: new RegExp(query, 'i') } },
-                ],
-            });
-        } else {
-            // http://localhost:4000/users/searchUser?key=12
-            results = await User.find({
-                $or: [
-                    { age: { $eq: parseInt(query) } },
-                    { phoneNo: { $eq: parseInt(query) } },
-                ],
-            });
-        }
-        res.json(results);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-}
+
+
+
+
+
+
+
+
+// http://localhost:8000/employee/getEmployee?value=12345&key=mobileNumber -> by mobileNumber
+// http://localhost:8000/employee/getEmployee?value=man&key=name  -> by name
+// http://localhost:8000/employee/getEmployee?value=1&key=enrollmentNumber -> by entrollmentNumber
+// http://localhost:8000/employee/getEmployee?value=mansi -> all fields

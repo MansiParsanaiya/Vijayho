@@ -10,6 +10,9 @@ const { totalEmployee } = require('../controllers/homeController');
 // Read
 router.get('/getEmployee', employeeController.getEmployee);
 
+
+router.get('/getEmployeeAttendance/:enrollmentNumber', employeeController.getEmployeeAttendance);
+
 // Create
 router.post('/postEmployee', employeeController.createEmployee);
 
@@ -18,8 +21,6 @@ router.patch('/:enrollmentNumber', employeeController.updateEmployee)
 
 // Delete
 router.delete('/delete/:enrollmentNumber', employeeController.deleteEmployee)
-
-
 
 // =================================================   Home Page  ================================================
 

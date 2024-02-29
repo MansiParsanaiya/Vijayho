@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema({
   enrollmentNumber: String,
+  name: String,
   attendance: { type: String, enum: ['present', 'absent'] },
   date: { type: Date, default: Date.now },
 })

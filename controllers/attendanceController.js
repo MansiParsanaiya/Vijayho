@@ -1,10 +1,11 @@
 const Attendance = require('../models/attendanceModel');
+const Employee = require("../models/employeeModel");
 
 
 // Add Attendance
 exports.addAttendance = async (req, res) => {
   try {
-    let { enrollmentNumber, attendance, date } = req.body;
+    let { enrollmentNumber, attendance, date, name } = req.body;
 
     // If date is not provided, default to current date
     if (!date) {
@@ -16,6 +17,12 @@ exports.addAttendance = async (req, res) => {
       if (isNaN(date.getTime())) {
         return res.status(400).json({ message: 'Invalid date format. Please provide a valid date.' });
       }
+    }
+
+    const employeeExists = await Employee.exists({ enrollmentNumber });
+
+    if (!employeeExists) {
+      return res.status(400).json({ message: `Employee with enrollment number ${enrollmentNumber} does not exist.` });
     }
 
     const formattedDate = date.toISOString().split('T')[0];
@@ -34,7 +41,7 @@ exports.addAttendance = async (req, res) => {
       date: { $gte: formattedDate, $lt: new Date(date.getTime() + 86400000).toISOString().split('T')[0] },
     })
 
-    const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
+    const studentAttendance = new Attendance({ enrollmentNumber, attendance, date, name });
     await studentAttendance.save();
 
     res.json({ message: 'Attendance recorded successfully' });
@@ -56,6 +63,7 @@ exports.getAttendanceByDate = async (req, res) => {
     const attendanceByDate = students.map((student) => {
       return {
         enrollmentNumber: student.enrollmentNumber,
+        name: student.name,
         attendance: student.attendance,
         date: student.date.toISOString().split('T')[0],
       };
@@ -66,6 +74,8 @@ exports.getAttendanceByDate = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 }
+
+
 
 // Update Attendance
 exports.updateAttendance = async (req, res) => {
