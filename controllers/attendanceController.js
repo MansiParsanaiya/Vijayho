@@ -23,13 +23,16 @@ exports.addAttendance = async (req, res) => {
     const existingAttendance = await Attendance.findOne({
       enrollmentNumber,
       date: { $gte: formattedDate, $lt: new Date(date.getTime() + 86400000).toISOString().split('T')[0] },
-    });
+    })
 
     if (existingAttendance) {
       return res.status(400).json({ message: `Attendance record already exists for enrollment number ${enrollmentNumber} on ${formattedDate}.` });
     }
 
-    // console.log({ date: existingAttendance })    -> null
+    console.log({
+      enrollmentNumber,
+      date: { $gte: formattedDate, $lt: new Date(date.getTime() + 86400000).toISOString().split('T')[0] },
+    })
 
     const studentAttendance = new Attendance({ enrollmentNumber, attendance, date });
     await studentAttendance.save();

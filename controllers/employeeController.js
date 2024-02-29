@@ -63,16 +63,14 @@ exports.getEmployee = async (req, res) => {
     try {
         let query = {};
 
-        // Add search functionality if search query parameter is provided
         if (search) {
-            const searchTerm = parseInt(search); // Convert search term to an integer
+            const searchTerm = parseInt(search);
             if (!isNaN(searchTerm)) {
-                query.employeeId = { $lte: searchTerm }; // Find records where employeeId is less than or equal to the search term
+                query.employeeId = { $lte: searchTerm };
             } else {
-                const searchRegex = new RegExp(search, 'i'); // Case-insensitive regex for searching
+                const searchRegex = new RegExp(search, 'i');
                 query.$or = [
-                    { name: searchRegex }, // Search by name
-                    // Add more fields as needed for searching
+                    { name: searchRegex },
                 ];
             }
         }
@@ -83,8 +81,6 @@ exports.getEmployee = async (req, res) => {
         res.status(500).json(error);
     }
 }
-
-
 
 
 // Update 
