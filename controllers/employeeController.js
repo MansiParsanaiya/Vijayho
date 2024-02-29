@@ -36,6 +36,7 @@ exports.createEmployee = async (req, res) => {
 //     }
 // }
 
+
 // Get employee by key
 exports.getEmployee = async (req, res) => {
     try {
@@ -79,43 +80,6 @@ exports.getEmployee = async (req, res) => {
     }
 }
 
-
-exports.getEmployeeAttendance = async (req, res) => {
-    try {
-        const { enrollmentNumber } = req.params;
-
-        // Check if the employee with the given enrollment number exists
-        const employee = await Employee.findOne({ enrollmentNumber });
-
-        if (!employee) {
-            return res.status(404).json({ message: `Employee with enrollment number ${enrollmentNumber} not found.` });
-        }
-
-        // Fetch attendance records for the employee
-        const attendanceRecords = await Attendance.find({ enrollmentNumber });
-
-        // Create a response object with employee details and attendance information
-        const response = {
-            enrollmentNumber: employee.enrollmentNumber,
-            name: employee.name,
-            mobileNumber: employee.mobileNumber,
-            attendance: attendanceRecords.length > 0 ? attendanceRecords : null,
-        };
-
-        res.status(200).json(response);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-};
-
-
-
-
-
-
-
-
 // Update 
 exports.updateEmployee = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;
@@ -157,12 +121,6 @@ exports.deleteEmployee = async (req, res) => {
         res.status(500).send({ error: 'Server error' });
     }
 }
-
-
-
-
-
-
 
 
 

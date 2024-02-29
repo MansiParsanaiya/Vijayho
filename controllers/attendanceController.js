@@ -4,16 +4,17 @@ const Employee = require("../models/employeeModel");
 
 // Add Attendance
 exports.addAttendance = async (req, res) => {
-  try {
+  try 
+  {
     let { enrollmentNumber, attendance, date, name } = req.body;
 
-    // If date is not provided, default to current date
-    if (!date) {
+    if (!date) 
+    {
       date = new Date();
-    } else {
-      // Attempt to parse the provided date
+    } 
+    else 
+    {
       date = new Date(date);
-      // Check if the provided date is valid
       if (isNaN(date.getTime())) {
         return res.status(400).json({ message: 'Invalid date format. Please provide a valid date.' });
       }
@@ -74,8 +75,6 @@ exports.getAttendanceByDate = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 }
-
-
 
 // Update Attendance
 exports.updateAttendance = async (req, res) => {
