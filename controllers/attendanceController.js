@@ -50,8 +50,7 @@ exports.addAttendance = async (req, res) => {
 }
 
 // Read Attendance
-
-// Using MongoDB Query
+// ======================================================================================================================
 // exports.getAttendanceByDate = async (req, res) => {
 //   const { date } = req.params;
 
@@ -89,7 +88,7 @@ exports.addAttendance = async (req, res) => {
 //     res.status(500).json({ success: false, error: error.message });
 //   }
 // };
-
+// ======================================================================================================================
 exports.getAttendanceByDate = async (req, res) => {
   const { date } = req.params;
 
