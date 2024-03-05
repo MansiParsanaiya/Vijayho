@@ -59,7 +59,7 @@ exports.getEmployeeAttendance = async (req, res) => {
             name: employee.name,
             mobileNumber: employee.mobileNumber,
             attendance: employee.attendance,
-            date:employee.date.toISOString().split('T')[0]
+            date:employee.date
         }));
 
         res.status(200).json(formattedEmployees);
