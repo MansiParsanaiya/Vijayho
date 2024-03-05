@@ -75,19 +75,22 @@ exports.addAttendance = async (req, res) => {
 
 
 exports.getAttendanceByDate = async (req, res) => {
-
   const { date } = req.params;
 
   try {
     const students = await Attendance.find({
       'date': { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) },
-    }).populate('enrollmentNumber', 'name mobileNumber'); 
+    }).populate({
+      path: 'enrollmentNumber',
+      select: 'name mobileNumber', // Select only the fields you need
+    });
 
     const attendanceByDate = students.map((student) => {
       return {
-        entrollmentNumber: student.entrollmentNumber,
-        name: student.name,
-        mobileNumber: student.mobileNumber,
+        enrollmentNumber: {
+          name: student.enrollmentNumber.name,
+          mobileNumber: student.enrollmentNumber.mobileNumber,
+        },
         attendance: student.attendance,
         date: student.date.toISOString().split('T')[0],
       };
@@ -97,9 +100,7 @@ exports.getAttendanceByDate = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
-}
-
-
+};
 
 
 
