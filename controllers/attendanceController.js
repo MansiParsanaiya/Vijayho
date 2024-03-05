@@ -120,7 +120,6 @@ exports.getAttendanceByDate = async (req, res) => {
   }
 }
 
-
 // Update Attendance
 exports.updateAttendance = async (req, res) => {
   try {
