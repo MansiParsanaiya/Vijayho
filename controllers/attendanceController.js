@@ -4,16 +4,13 @@ const Employee = require("../models/employeeModel");
 
 // Add Attendance
 exports.addAttendance = async (req, res) => {
-  try 
-  {
+  try {
     let { enrollmentNumber, attendance, date } = req.body;
 
-    if (!date) 
-    {
+    if (!date) {
       date = new Date();
-    } 
-    else 
-    {
+    }
+    else {
       date = new Date(date);
       if (isNaN(date.getTime())) {
         return res.status(400).json({ message: 'Invalid date format. Please provide a valid date.' });
@@ -54,20 +51,37 @@ exports.addAttendance = async (req, res) => {
 
 // Read Attendance
 exports.getAttendanceByDate = async (req, res) => {
-  const { date } = req.params;
 
+  const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber')
+
+  const { date } = req.params;
   try {
     const students = await Attendance.find({
       'date': { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) },
     });
 
-    const attendanceByDate = students.map((student) => {
+    for (let i = 0; i < employees.length; i++) {
+      const employee = employees[i];
+      const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
+
+      if (attendanceData) {
+        employee.attendance = attendanceData.attendance;
+      } else {
+        employee.attendance = null;
+      }
+    }
+
+    const attendanceByDate = students.map((employee) => {
       return {
-        enrollmentNumber: student.enrollmentNumber,
-        attendance: student.attendance,
-        date: student.date.toISOString().split('T')[0],
+        enrollmentNumber: employee.enrollmentNumber,
+        name: employee.name,
+        mobileNumber: employee.mobileNumber,
+        attendance: employee.attendance,
+        date: employee.date.toISOString().split('T')[0],
       };
     });
+
+
 
     res.status(200).json({ success: true, data: attendanceByDate });
   } catch (error) {
