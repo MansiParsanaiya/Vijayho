@@ -48,6 +48,7 @@ exports.getEmployeeAttendance = async (req, res) => {
 
             if (attendanceData) {
                 employee.attendance = attendanceData.attendance;
+                employee.date = attendanceData.date;
             } else {
                 employee.attendance = null;
             }
@@ -57,7 +58,8 @@ exports.getEmployeeAttendance = async (req, res) => {
             enrollmentNumber: employee.enrollmentNumber,
             name: employee.name,
             mobileNumber: employee.mobileNumber,
-            attendance: employee.attendance
+            attendance: employee.attendance,
+            date:employee.date
         }));
 
         res.status(200).json(formattedEmployees);
