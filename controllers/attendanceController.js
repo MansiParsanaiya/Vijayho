@@ -50,53 +50,71 @@ exports.addAttendance = async (req, res) => {
 }
 
 // Read Attendance
-// exports.getAttendanceByDate = async (req, res) => {
 
+// Using MongoDB Query
+// exports.getAttendanceByDate = async (req, res) => {
 //   const { date } = req.params;
 
 //   try {
-//     const students = await Attendance.find({
-//       'date': { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) },
-//     });
+//     const attendanceData = await Attendance.aggregate([
+//       {
+//         $match: {
+//           'date': { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) },
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: 'employees',  
+//           localField: 'enrollmentNumber',
+//           foreignField: 'enrollmentNumber',
+//           as: 'employeeData',
+//         },
+//       },
+//       {
+//         $unwind: '$employeeData', 
+//       },
+//       {
+//         $project: {
+//           enrollmentNumber: 1,
+//           attendance: 1,
+//           date: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+//           name: '$employeeData.name',
+//           mobileNumber: '$employeeData.mobileNumber',
+//         },
+//       },
+//     ]);
 
-//     const attendanceByDate = students.map((student) => {
-//       return {
-//         enrollmentNumber: student.enrollmentNumber,
-//         attendance: student.attendance,
-//         date: student.date.toISOString().split('T')[0],
-//       };
-//     });
-
-//     res.status(200).json({ success: true, data: attendanceByDate });
+//     res.status(200).json({ success: true, data: attendanceData });
 //   } catch (error) {
 //     res.status(500).json({ success: false, error: error.message });
 //   }
-// }
-
+// };
 
 exports.getAttendanceByDate = async (req, res) => {
   const { date } = req.params;
 
   try {
-    const students = await Attendance.find({
+    const attendanceData = await Attendance.find({
       'date': { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) },
-    }).populate({
-      path: 'enrollmentNumber',
-      select: 'name mobileNumber', // Select only the fields you need
     });
 
-    const attendanceByDate = students.map((student) => {
-      return {
-        enrollmentNumber: {
-          name: student.enrollmentNumber.name,
-          mobileNumber: student.enrollmentNumber.mobileNumber,
-        },
-        attendance: student.attendance,
-        date: student.date.toISOString().split('T')[0],
-      };
-    });
+    const result = [];
 
-    res.status(200).json({ success: true, data: attendanceByDate });
+    for (const attendance of attendanceData) {
+      const employee = await Employee.findOne({ enrollmentNumber: attendance.enrollmentNumber });
+
+      if (employee) {
+        result.push({
+          enrollmentNumber: attendance.enrollmentNumber,
+          name: employee.name,
+          mobileNumber: employee.mobileNumber,
+          attendance: attendance.attendance,
+          date: attendance.date.toISOString().split('T')[0],
+        });
+      }
+    }
+
+    res.status(200).json({ success: true, data: result });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
