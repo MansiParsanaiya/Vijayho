@@ -38,35 +38,73 @@ exports.createEmployee = async (req, res) => {
 
 
 // Get Employee Attedance
+// exports.getEmployeeAttendance = async (req, res) => {
+//     try {
+//         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
+
+//         for (let i = 0; i < employees.length; i++) {
+//             const employee = employees[i];
+//             const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
+
+//             if (attendanceData) {
+//                 employee.attendance = attendanceData.attendance;
+//                 employee.date = attendanceData.date;
+//             } else {
+//                 employee.attendance = null;
+//             }
+//         }
+
+//         const formattedEmployees = employees.map(employee => ({
+//             enrollmentNumber: employee.enrollmentNumber,
+//             name: employee.name,
+//             mobileNumber: employee.mobileNumber,
+//             attendance: employee.attendance,
+//             date:employee.date
+//         }));
+
+//         res.status(200).json(formattedEmployees);
+//     } catch (error) {
+//         res.status(500).json(error);
+//     }
+// }
+
+
 exports.getEmployeeAttendance = async (req, res) => {
     try {
+        const queryDate = req.query.date;
+        const filterDate = new Date(queryDate);
+        const formattedFilterDate = filterDate.toISOString().split('T')[0];
+
         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
 
-        for (let i = 0; i < employees.length; i++) {
-            const employee = employees[i];
+        const formattedEmployees = await Promise.all(employees.map(async employee => {
             const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
 
-            if (attendanceData) {
-                employee.attendance = attendanceData.attendance;
-                employee.date = attendanceData.date;
-            } else {
-                employee.attendance = null;
+            if (attendanceData && attendanceData.date.toISOString().split('T')[0] === formattedFilterDate) {
+                return {
+                    enrollmentNumber: employee.enrollmentNumber,
+                    name: employee.name,
+                    mobileNumber: employee.mobileNumber,
+                    attendance: attendanceData.attendance,
+                    date: attendanceData.date
+                };
+            } 
+            else 
+            {
+                return null;
             }
-        }
-
-        const formattedEmployees = employees.map(employee => ({
-            enrollmentNumber: employee.enrollmentNumber,
-            name: employee.name,
-            mobileNumber: employee.mobileNumber,
-            attendance: employee.attendance,
-            date:employee.date.toISOString().split('T')[0],
         }));
+        const filteredEmployees = formattedEmployees.filter(employee => employee !== null);
 
-        res.status(200).json(formattedEmployees);
+        res.status(200).json(filteredEmployees);
     } catch (error) {
         res.status(500).json(error);
     }
 }
+
+
+
+
 
 // Search Employee by key
 exports.getEmployee = async (req, res) => {
