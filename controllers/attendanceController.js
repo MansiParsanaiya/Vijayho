@@ -50,44 +50,59 @@ exports.addAttendance = async (req, res) => {
 }
 
 // Read Attendance
+// exports.getAttendanceByDate = async (req, res) => {
+
+//   const { date } = req.params;
+
+//   try {
+//     const students = await Attendance.find({
+//       'date': { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) },
+//     });
+
+//     const attendanceByDate = students.map((student) => {
+//       return {
+//         enrollmentNumber: student.enrollmentNumber,
+//         attendance: student.attendance,
+//         date: student.date.toISOString().split('T')[0],
+//       };
+//     });
+
+//     res.status(200).json({ success: true, data: attendanceByDate });
+//   } catch (error) {
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// }
+
+
 exports.getAttendanceByDate = async (req, res) => {
 
-  const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber')
-
   const { date } = req.params;
+
   try {
     const students = await Attendance.find({
       'date': { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) },
-    });
+    }).populate('enrollmentNumber', 'name mobileNumber'); // Populate enrollmentNumber with name and mobileNumber fields from Employee model
 
-    for (let i = 0; i < employees.length; i++) {
-      const employee = employees[i];
-      const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
-
-      if (attendanceData) {
-        employee.attendance = attendanceData.attendance;
-      } else {
-        employee.attendance = null;
-      }
-    }
-
-    const attendanceByDate = students.map((employee) => {
+    const attendanceByDate = students.map((student) => {
       return {
-        enrollmentNumber: employee.enrollmentNumber,
-        name: employee.name,
-        mobileNumber: employee.mobileNumber,
-        attendance: employee.attendance,
-        date: employee.date.toISOString().split('T')[0],
+        enrollmentNumber: {
+          name: student.enrollmentNumber.name,
+          mobileNumber: student.enrollmentNumber.mobileNumber
+        },
+        attendance: student.attendance,
+        date: student.date.toISOString().split('T')[0],
       };
     });
-
-
 
     res.status(200).json({ success: true, data: attendanceByDate });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 }
+
+
+
+
 
 // Update Attendance
 exports.updateAttendance = async (req, res) => {
