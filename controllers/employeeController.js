@@ -81,16 +81,16 @@ exports.getEmployeeAttendance = async (req, res) => {
             const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
 
             if (attendanceData && attendanceData.date.toISOString().split('T')[0] === formattedFilterDate) {
+                const formattedAttendanceDate = attendanceData.date.toISOString().split('T')[0];
                 return {
                     enrollmentNumber: employee.enrollmentNumber,
                     name: employee.name,
                     mobileNumber: employee.mobileNumber,
                     attendance: attendanceData.attendance,
-                    date: attendanceData.date
+                    date: formattedAttendanceDate
                 };
-            } 
-            else 
-            {
+            }
+            else {
                 return null;
             }
         }));
