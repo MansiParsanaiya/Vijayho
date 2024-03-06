@@ -66,39 +66,67 @@ exports.createEmployee = async (req, res) => {
 //     }
 // }
 
+// exports.getEmployeeAttendance = async (req, res) => {
+//     try {
+//         const queryDate = req.query.date;
+//         const filterDate = new Date(queryDate);
+//         const formattedFilterDate = filterDate.toISOString().split('T')[0];
+
+//         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
+
+//         const formattedEmployees = await Promise.all(employees.map(async employee => {
+//             const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
+
+//             if (attendanceData && attendanceData.date.toISOString().split('T')[0] === formattedFilterDate) {
+//                 const formattedAttendanceDate = attendanceData.date.toISOString().split('T')[0];
+//                 return {
+//                     enrollmentNumber: employee.enrollmentNumber,
+//                     name: employee.name,
+//                     mobileNumber: employee.mobileNumber,
+//                     attendance: attendanceData.attendance,
+//                     date: formattedAttendanceDate
+//                 };
+//             }
+//             else {
+//                 return null;
+//             }
+//         }));
+//         const filteredEmployees = formattedEmployees.filter(employee => employee !== null);
+
+//         res.status(200).json(filteredEmployees);
+//     } catch (error) {
+//         res.status(500).json(error);
+//     }
+// }
+
 exports.getEmployeeAttendance = async (req, res) => {
     try {
         const queryDate = req.query.date;
         const filterDate = new Date(queryDate);
-        const formattedFilterDate = filterDate.toISOString().split('T')[0];
 
         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
 
-        const formattedEmployees = await Promise.all(employees.map(async employee => {
-            const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
+        const filteredEmployees = [];
 
-            if (attendanceData && attendanceData.date.toISOString().split('T')[0] === formattedFilterDate) {
-                const formattedAttendanceDate = attendanceData.date.toISOString().split('T')[0];
-                return {
+        for (const employee of employees) {
+            const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber, date: { $eq: filterDate } });
+
+            if (attendanceData) {
+                filteredEmployees.push({
                     enrollmentNumber: employee.enrollmentNumber,
                     name: employee.name,
                     mobileNumber: employee.mobileNumber,
                     attendance: attendanceData.attendance,
-                    date: formattedAttendanceDate
-                };
+                    date: attendanceData.date.toISOString().split('T')[0]
+                });
             }
-            else {
-                return null;
-            }
-        }));
-        const filteredEmployees = formattedEmployees.filter(employee => employee !== null);
+        }
 
         res.status(200).json(filteredEmployees);
     } catch (error) {
         res.status(500).json(error);
     }
 }
-
 
 
 
