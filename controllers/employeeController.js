@@ -1,7 +1,6 @@
 const Employee = require("../models/employeeModel");
 const Attendance = require('../models/attendanceModel');
 
-
 // Create Employee
 exports.createEmployee = async (req, res) => {
     try {
@@ -36,7 +35,6 @@ exports.createEmployee = async (req, res) => {
 //     }
 // }
 
-
 // Get Employee Attedance
 // exports.getEmployeeAttendance = async (req, res) => {
 //     try {
@@ -67,7 +65,6 @@ exports.createEmployee = async (req, res) => {
 //         res.status(500).json(error);
 //     }
 // }
-
 
 exports.getEmployeeAttendance = async (req, res) => {
     try {

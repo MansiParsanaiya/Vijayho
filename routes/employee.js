@@ -23,8 +23,6 @@ router.delete('/delete/:enrollmentNumber', employeeController.deleteEmployee)
 
 // =================================================   Home Page  ================================================
 
-router.get('/', totalEmployee)
-
-
+router.get('/totalEmployee', totalEmployee)
 
 module.exports = router;

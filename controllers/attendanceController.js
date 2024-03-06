@@ -7,6 +7,10 @@ exports.addAttendance = async (req, res) => {
   try {
     let { enrollmentNumber, attendance, date } = req.body;
 
+    if (!attendance) {
+      attendance = null;
+    }
+
     if (!date) {
       date = new Date();
     }
@@ -88,6 +92,7 @@ exports.addAttendance = async (req, res) => {
 //     res.status(500).json({ success: false, error: error.message });
 //   }
 // };
+
 // ======================================================================================================================
 exports.getAttendanceByDate = async (req, res) => {
   const { date } = req.params;
