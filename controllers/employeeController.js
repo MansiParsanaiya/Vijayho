@@ -124,7 +124,7 @@ exports.getEmployeeAttendance = async (req, res) => {
                     date: formattedAttendanceDate
                 };
             } else {
-                res.json({ message: 'Please enter valid date' })
+                return null;
             }
         }));
 
