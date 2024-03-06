@@ -103,14 +103,25 @@ exports.createEmployee = async (req, res) => {
 exports.getEmployeeAttendance = async (req, res) => {
     try {
         const queryDate = req.query.date;
-        const filterDate = new Date(queryDate);
+        let filterDate;
+
+        if (queryDate) {
+            // If custom date is provided in query parameters, use it
+            filterDate = new Date(queryDate);
+        } else {
+            // If no custom date provided, use current date
+            filterDate = new Date();
+        }
+
+        // Remove the time part from filterDate
+        filterDate.setHours(0, 0, 0, 0);
 
         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
 
         const filteredEmployees = [];
 
         for (const employee of employees) {
-            const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber, date: { $eq: filterDate } });
+            const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber, date: filterDate });
 
             if (attendanceData) {
                 filteredEmployees.push({
