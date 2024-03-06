@@ -65,7 +65,7 @@ exports.createEmployee = async (req, res) => {
 //         res.status(500).json(error);
 //     }
 // }
-
+// OLD
 // exports.getEmployeeAttendance = async (req, res) => {
 //     try {
 //         const queryDate = req.query.date;
@@ -99,6 +99,7 @@ exports.createEmployee = async (req, res) => {
 //     }
 // }
 
+// NEW API
 exports.getEmployeeAttendance = async (req, res) => {
     try {
         const queryDate = req.query.date;
