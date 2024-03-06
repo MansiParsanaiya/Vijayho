@@ -99,47 +99,42 @@ exports.createEmployee = async (req, res) => {
 //     }
 // }
 
-// NEW API
 exports.getEmployeeAttendance = async (req, res) => {
     try {
         const queryDate = req.query.date;
-        let filterDate;
-
-        if (queryDate) {
-            // If custom date is provided in query parameters, use it
-            filterDate = new Date(queryDate);
-        } else {
-            // If no custom date provided, use current date
-            filterDate = new Date();
-        }
-
-        // Remove the time part from filterDate
-        filterDate.setHours(0, 0, 0, 0);
+        const filterDate = new Date(queryDate);
+        const nextDate = new Date(filterDate);
+        nextDate.setDate(filterDate.getDate() + 1);
 
         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
 
-        const filteredEmployees = [];
-
-        for (const employee of employees) {
-            const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber, date: filterDate });
+        const formattedEmployees = await Promise.all(employees.map(async employee => {
+            const attendanceData = await Attendance.findOne({
+                enrollmentNumber: employee.enrollmentNumber,
+                date: { $gte: filterDate, $lt: nextDate }
+            });
 
             if (attendanceData) {
-                filteredEmployees.push({
+                const formattedAttendanceDate = attendanceData.date.toISOString().split('T')[0];
+                return {
                     enrollmentNumber: employee.enrollmentNumber,
                     name: employee.name,
                     mobileNumber: employee.mobileNumber,
                     attendance: attendanceData.attendance,
-                    date: attendanceData.date.toISOString().split('T')[0]
-                });
+                    date: formattedAttendanceDate
+                };
+            } else {
+                res.json({ message: 'Please enter valid date' })
             }
-        }
+        }));
+
+        const filteredEmployees = formattedEmployees.filter(employee => employee !== null);
 
         res.status(200).json(filteredEmployees);
     } catch (error) {
         res.status(500).json(error);
     }
 }
-
 
 
 
