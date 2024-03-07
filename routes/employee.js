@@ -6,11 +6,12 @@ const employeeController = require('../controllers/employeeController');
 const { totalEmployee } = require('../controllers/homeController');
 
 
-// Read
+// Read / Search
 router.get('/getEmployee', employeeController.getEmployee);
 
 // Get Employee Attedance
 router.get('/getEmployeeAttendance', employeeController.getEmployeeAttendance);
+// router.get('/getEmployeeAttendance', employeeController.getEmployee);
 
 // Create
 router.post('/postEmployee', employeeController.createEmployee);

@@ -91,7 +91,7 @@ exports.addAttendance = async (req, res) => {
 //   } catch (error) {
 //     res.status(500).json({ success: false, error: error.message });
 //   }
-// };
+// }
 
 // ======================================================================================================================
 exports.getAttendanceByDate = async (req, res) => {
@@ -118,9 +118,9 @@ exports.getAttendanceByDate = async (req, res) => {
       }
     }
 
-    res.status(200).json({ success: true, data: result });
+    res.status(200).json({ data: result });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ error: error.message });
   }
 }
 
