@@ -35,7 +35,6 @@ exports.createEmployee = async (req, res) => {
 //     }
 // }
 
-
 // Search Employee by key
 exports.getEmployee = async (req, res) => {
     try {
@@ -79,86 +78,24 @@ exports.getEmployee = async (req, res) => {
     }
 }
 
-
-// Get Employee Attedance
-// exports.getEmployeeAttendance = async (req, res) => {
-//     try {
-//         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
-
-//         for (let i = 0; i < employees.length; i++) {
-//             const employee = employees[i];
-//             const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
-
-//             if (attendanceData) {
-//                 employee.attendance = attendanceData.attendance;
-//                 employee.date = attendanceData.date;
-//             } else {
-//                 employee.attendance = null;
-//             }
-//         }
-
-//         const formattedEmployees = employees.map(employee => ({
-//             enrollmentNumber: employee.enrollmentNumber,
-//             name: employee.name,
-//             mobileNumber: employee.mobileNumber,
-//             attendance: employee.attendance,
-//             date:employee.date
-//         }));
-
-//         res.status(200).json(formattedEmployees);
-//     } catch (error) {
-//         res.status(500).json(error);
-//     }
-// }
-// OLD
-// exports.getEmployeeAttendance = async (req, res) => {
-//     try {
-//         const queryDate = req.query.date;
-//         const filterDate = new Date(queryDate);
-//         const formattedFilterDate = filterDate.toISOString().split('T')[0];
-
-//         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
-
-//         const formattedEmployees = await Promise.all(employees.map(async employee => {
-//             const attendanceData = await Attendance.findOne({ enrollmentNumber: employee.enrollmentNumber });
-
-//             if (attendanceData && attendanceData.date.toISOString().split('T')[0] === formattedFilterDate) {
-//                 const formattedAttendanceDate = attendanceData.date.toISOString().split('T')[0];
-//                 return {
-//                     enrollmentNumber: employee.enrollmentNumber,
-//                     name: employee.name,
-//                     mobileNumber: employee.mobileNumber,
-//                     attendance: attendanceData.attendance,
-//                     date: formattedAttendanceDate
-//                 };
-//             }
-//             else {
-//                 return null;
-//             }
-//         }));
-//         const filteredEmployees = formattedEmployees.filter(employee => employee !== null);
-
-//         res.status(200).json(filteredEmployees);
-//     } catch (error) {
-//         res.status(500).json(error);
-//     }
-// }
-
+// Get Employee Attendance 
 exports.getEmployeeAttendance = async (req, res) => {
     try {
-        const employees = await Employee.find();
-        const currentDate = new Date(); // Get the current date
+        const { date } = req.query;
+        const currentDate = date ? new Date(date) : new Date();
 
-        // Fetch attendance records for the current date
-        const attendanceRecords = await Attendance.find({ date: currentDate });
+        const nextDate = new Date(currentDate);
+        nextDate.setDate(currentDate.getDate() + 1);
 
-        // Create a map for faster lookups
+        const attendanceRecords = await Attendance.find({ date: { $gte: currentDate, $lt: nextDate } });
+
         const attendanceMap = new Map();
         attendanceRecords.forEach(record => {
             attendanceMap.set(record.enrollmentNumber, record);
         });
 
-        // Combine employee and attendance data
+        const employees = await Employee.find();
+
         const employeesWithAttendance = employees.map(employee => {
             const attendanceRecord = attendanceMap.get(employee.enrollmentNumber) || { attendance: null };
 
@@ -167,53 +104,13 @@ exports.getEmployeeAttendance = async (req, res) => {
                 name: employee.name,
                 mobileNumber: employee.mobileNumber,
                 attendance: attendanceRecord.attendance,
-            };
-        });
-
+            }
+        })
         res.status(200).json(employeesWithAttendance);
     } catch (error) {
         res.status(500).json(error);
     }
-};
-
-
-
-// exports.getEmployeeAttendance = async (req, res) => {
-//     try {
-//         const queryDate = req.query.date;
-//         const filterDate = new Date(queryDate);
-//         const nextDate = new Date(filterDate);
-//         nextDate.setDate(filterDate.getDate() + 1);
-
-//         const employees = await Employee.find({}, 'enrollmentNumber name mobileNumber');
-
-//         const formattedEmployees = await Promise.all(employees.map(async employee => {
-//             const attendanceData = await Attendance.findOne({
-//                 enrollmentNumber: employee.enrollmentNumber,
-//                 date: { $gte: filterDate, $lt: nextDate }
-//             });
-
-//             if (attendanceData) {
-//                 const formattedAttendanceDate = attendanceData.date.toISOString().split('T')[0];
-//                 return {
-//                     enrollmentNumber: employee.enrollmentNumber,
-//                     name: employee.name,
-//                     mobileNumber: employee.mobileNumber,
-//                     attendance: attendanceData.attendance,
-//                     date: formattedAttendanceDate
-//                 };
-//             } else {
-//                 return null;
-//             }
-//         }));
-
-//         const filteredEmployees = formattedEmployees.filter(employee => employee !== null);
-
-//         res.status(200).json(filteredEmployees);
-//     } catch (error) {
-//         res.status(500).json(error);
-//     }
-// }
+}
 
 // Update Employee
 exports.updateEmployee = async (req, res) => {
