@@ -9,10 +9,7 @@ const employeeSchema = new mongoose.Schema({
     bank: String,
     accountNumber: String,
     ifscCode: String,
-    payType: {
-        perDay: Number,
-        perMonth: Number,
-    },
+    salary: Number
 });
 
 const Employee = mongoose.model('Employee', employeeSchema);

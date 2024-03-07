@@ -138,9 +138,7 @@ exports.updateEmployee = async (req, res) => {
 // Delete Employee
 exports.deleteEmployee = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;
-
     try {
-
         const employee = await Employee.findOneAndDelete({ enrollmentNumber });
 
         if (!employee) {
