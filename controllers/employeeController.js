@@ -125,10 +125,8 @@ exports.updateEmployee = async (req, res) => {
     const updateFields = req.body;
 
     try {
-        // Exclude enrollmentNumber from updateFields
         delete updateFields.enrollmentNumber;
 
-        // Find the employee by enrollmentNumber and update
         const employee = await Employee.findOneAndUpdate({ enrollmentNumber }, updateFields, { new: true });
 
         if (!employee) {
