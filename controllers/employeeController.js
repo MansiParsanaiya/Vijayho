@@ -82,6 +82,13 @@ exports.getEmployee = async (req, res) => {
 exports.getEmployeeAttendance = async (req, res) => {
     try {
         const { date } = req.query;
+
+        const dateFormatRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+        if (date && !dateFormatRegex.test(date)) {
+            return res.status(400).json({ error: 'Invalid date format. Please use YYYY-MM-DD format.' });
+        }
+
         const currentDate = date ? new Date(date) : new Date();
 
         const nextDate = new Date(currentDate);
