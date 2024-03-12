@@ -10,7 +10,7 @@ const { totalEmployee } = require('../controllers/homeController');
 router.get('/getEmployee', employeeController.getEmployee);
 
 // Get Total Attendance
-router.get('/getTotalAttendance/:enrollmentNumber', employeeController.getTotalAttendance);
+router.get('/getTotalAttendance/:enrollmentNumber/:month', employeeController.getTotalAttendance);
 
 // Get Employee Attedance
 router.get('/getEmployeeAttendance', employeeController.getEmployeeAttendance);

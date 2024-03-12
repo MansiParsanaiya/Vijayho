@@ -120,23 +120,45 @@ exports.getEmployeeAttendance = async (req, res) => {
 }
 
 // Get Total Employee Attendance by monthly
+// exports.getTotalAttendance = async (req, res) => {
+//     const enrollmentNumber = req.params.enrollmentNumber;
+
+//     try {
+//         // Fetch all attendance records for the given enrollment number
+//         const allAttendance = await Attendance.find({ enrollmentNumber });
+
+//         // Calculate total present attendance
+//         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
+
+//         res.json({ enrollmentNumber, totalPresentAttendance });
+//     } catch (error) {
+//         console.error('Error fetching total attendance:', error);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// }
 exports.getTotalAttendance = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;
+    const month = parseInt(req.params.month); // Convert month to integer
 
     try {
-        // Fetch all attendance records for the given enrollment number
-        const allAttendance = await Attendance.find({ enrollmentNumber });
+        // Fetch all attendance records for the given enrollment number and month
+        const allAttendance = await Attendance.find({
+            enrollmentNumber,
+            date: {
+                $gte: new Date(new Date().getFullYear(), month - 1, 1), // Start of the month
+                $lt: new Date(new Date().getFullYear(), month, 1), // End of the month
+            }
+        });
 
-        // Calculate total present attendance
+        // Calculate total present attendance for the month
         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
 
-        res.json({ enrollmentNumber, totalPresentAttendance });
+        res.json({ enrollmentNumber, month, totalPresentAttendance });
     } catch (error) {
         console.error('Error fetching total attendance:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-
 
 // Update Employee
 exports.updateEmployee = async (req, res) => {
