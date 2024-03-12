@@ -119,6 +119,41 @@ exports.getEmployeeAttendance = async (req, res) => {
     }
 }
 
+// Get Total Employee Attendance by monthly
+exports.getTotalAttendance = async (req, res) => {
+    try {
+        const { month, enrollmentNumber } = req.query;
+
+        if (!month || !enrollmentNumber) {
+            return res.status(400).json({ error: 'Month and enrollmentNumber are required parameters' });
+        }
+
+        // Extracting year and month from the provided date
+        const [year, monthStr] = month.split('-');
+        const monthInt = parseInt(monthStr);
+
+        if (isNaN(monthInt) || monthInt < 1 || monthInt > 12) {
+            return res.status(400).json({ error: 'Invalid month format. Please use YYYY-MM format.' });
+        }
+
+        const startDate = new Date(year, monthInt - 1, 1); // Setting the start date to the first day of the month
+        const endDate = new Date(year, monthInt, 0); // Setting the end date to the last day of the month
+
+        const attendanceRecords = await Attendance.find({
+            enrollmentNumber,
+            date: { $gte: startDate, $lte: endDate },
+            attendance: 'Present' // Considering only present attendance
+        });
+
+        const totalAttendance = attendanceRecords.length;
+
+        res.status(200).json({ enrollmentNumber, month, totalAttendance });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 // Update Employee
 exports.updateEmployee = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;

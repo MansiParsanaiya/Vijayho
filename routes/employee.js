@@ -9,8 +9,11 @@ const { totalEmployee } = require('../controllers/homeController');
 // Read + Search
 router.get('/getEmployee', employeeController.getEmployee);
 
+// Get Total Attendance
+router.get('/getTotalAttendance', employeeController.getTotalAttendance);
+
 // Get Employee Attedance
-router.get('/getEmployeeAttendance', employeeController.getEmployeeAttendance);
+router.get('/getEmployeeAttendance/:enrollmentNumber', employeeController.getEmployeeAttendance);
 
 // Create
 router.post('/postEmployee', employeeController.createEmployee);
