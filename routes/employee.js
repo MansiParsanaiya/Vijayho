@@ -10,10 +10,10 @@ const { totalEmployee } = require('../controllers/homeController');
 router.get('/getEmployee', employeeController.getEmployee);
 
 // Get Total Attendance
-router.get('/getTotalAttendance', employeeController.getTotalAttendance);
+router.get('/getTotalAttendance/:enrollmentNumber', employeeController.getTotalAttendance);
 
 // Get Employee Attedance
-router.get('/getEmployeeAttendance/:enrollmentNumber', employeeController.getEmployeeAttendance);
+router.get('/getEmployeeAttendance', employeeController.getEmployeeAttendance);
 
 // Create
 router.post('/postEmployee', employeeController.createEmployee);
