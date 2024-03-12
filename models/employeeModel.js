@@ -9,7 +9,12 @@ const employeeSchema = new mongoose.Schema({
     bank: String,
     accountNumber: String,
     ifscCode: String,
-    salary: Number
+    salary: Number,
+    adharCardNumber: Number,
+    branchName: String,
+    joiningDate: { type: Date, default: Date.now },
+    leavingDate: { type: Date, default: Date.now },
+
 });
 
 const Employee = mongoose.model('Employee', employeeSchema);
