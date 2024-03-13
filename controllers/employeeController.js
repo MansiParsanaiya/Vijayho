@@ -143,8 +143,9 @@ exports.getTotalAttendance = async (req, res) => {
         });
 
         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
+        const totalAbsentAttendance = allAttendance.filter(record => record.attendance === 'absent').length;
 
-        res.json({ enrollmentNumber, month, totalPresentAttendance });
+        res.json({ enrollmentNumber, month, totalPresentAttendance, totalAbsentAttendance });
     } catch (error) {
         console.error('Error fetching total attendance:', error);
         res.status(500).json({ error: 'Internal server error' });
