@@ -7,10 +7,10 @@ exports.createEmployee = async (req, res) => {
 
         const { joiningDate, leavingDate } = req.body;
         if (joiningDate == null) {
-            res.status(400).json({ message: "Joining Date is required !" });
+            res.json({ data: "Joining Date is required !" });
         }
         if (leavingDate == null) {
-            res.status(400).json({ message: "Leaving Date is required !" });
+            res.json({ data: "Leaving Date is required !" });
         }
 
         // Entrollment Number Auto-Increment
