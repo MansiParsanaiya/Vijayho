@@ -12,8 +12,8 @@ const employeeSchema = new mongoose.Schema({
     salary: Number,
     adharCardNumber: Number,
     branchName: String,
-    joiningDate: { type: Date, default: Date.now },
-    leavingDate: { type: Date, default: Date.now },
+    joiningDate: { type: Date, default: Date.now, required: true },
+    leavingDate: { type: Date, default: Date.now, required: true },
 
 });
 
