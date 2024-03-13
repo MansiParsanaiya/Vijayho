@@ -5,6 +5,14 @@ const Attendance = require('../models/attendanceModel');
 exports.createEmployee = async (req, res) => {
     try {
 
+        const { joiningDate, leavingDate } = req.body;
+        if (joiningDate == null) {
+            res.status(400).json({ message: "Joining Date is required !" });
+        }
+        if (leavingDate == null) {
+            res.status(400).json({ message: "Leaving Date is required !" });
+        }
+
         // Entrollment Number Auto-Increment
         const count = await Employee.countDocuments();
         const enrollNum = count + 1;
@@ -125,7 +133,7 @@ exports.getTotalAttendance = async (req, res) => {
     const month = parseInt(req.params.month);
 
     try {
-        
+
         const allAttendance = await Attendance.find({
             enrollmentNumber,
             date: {
