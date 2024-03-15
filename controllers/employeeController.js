@@ -132,7 +132,7 @@ exports.getEmployeeAttendance = async (req, res) => {
 exports.getTotalAttendance = async (req, res) => {
     let enrollmentNumber = parseInt(req.params.enrollmentNumber);
     const month = parseInt(req.params.month);
-    
+
     try {
         const allAttendance = await Attendance.find({
             enrollmentNumber,
@@ -145,7 +145,7 @@ exports.getTotalAttendance = async (req, res) => {
         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
         const totalAbsentAttendance = allAttendance.filter(record => record.attendance === 'absent').length;
 
-        res.json({ enrollmentNumber: enrollmentNumber + 1, month, totalPresentAttendance, totalAbsentAttendance });
+        res.json({ enrollmentNumber: enrollmentNumber, month, totalPresentAttendance, totalAbsentAttendance });
     } catch (error) {
         console.error('Error fetching total attendance:', error);
         res.status(500).json({ error: 'Internal server error' });
