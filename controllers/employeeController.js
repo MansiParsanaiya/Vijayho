@@ -133,14 +133,13 @@ exports.getTotalAttendance = async (req, res) => {
     let enrollmentNumber = parseInt(req.params.enrollmentNumber);
     const month = parseInt(req.params.month);
 
-    if (enrollmentNumber === 0) {
-        return res.status(400).json({ error: 'Enrollment number cannot be 0' });
+    if (enrollmentNumber < 1) {
+        return res.status(400).json({ error: 'Enrollment number cannot be less than 1' });
     }
-
     // Adjust enrollmentNumber if frontend numbering starts from 0
-    enrollmentNumber -= 1;
 
     try {
+        enrollmentNumber -= 1;
         const allAttendance = await Attendance.find({
             enrollmentNumber,
             date: {
