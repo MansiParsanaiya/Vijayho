@@ -195,55 +195,6 @@ exports.deleteEmployee = async (req, res) => {
 }
 
 // Generate Excel file
-exports.generateExcelSheet = async (req, res) => {
-    const { year, month } = req.params;
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0, 23, 59, 59);
-
-    try {
-        // Aggregate attendance data
-        const attendanceData = await Attendance.aggregate([
-            {
-                $match: {
-                    date: { $gte: startDate, $lte: endDate }
-                }
-            },
-            {
-                $group: {
-                    _id: '$enrollmentNumber',
-                    attendance: { $push: '$attendance' }
-                }
-            },
-            {
-                $lookup: {
-                    from: 'employees',
-                    localField: '_id',
-                    foreignField: 'enrollmentNumber',
-                    as: 'employee'
-                }
-            },
-            {
-                $project: {
-                    name: '$employee.name',
-                    attendance: 1
-                }
-            }
-        ]);
-
-        // Generate Excel sheet
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(attendanceData);
-        XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
-        const filePath = `attendance_${year}_${month}.xlsx`;
-        XLSX.writeFile(wb, filePath);
-
-        res.download(filePath); // Send Excel file as response
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-    }
-}
-
 
 
 
