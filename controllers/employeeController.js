@@ -130,8 +130,12 @@ exports.getEmployeeAttendance = async (req, res) => {
 
 // Get Total Employee Attendance by monthly
 exports.getTotalAttendance = async (req, res) => {
-    let enrollmentNumber = parseInt(req.params.enrollmentNumber);
+    const enrollmentNumber = req.params.enrollmentNumber;
     const month = parseInt(req.params.month);
+    
+    if(enrollmentNumber == 0) {
+      return res.json({ enrollmentNumber:"", month:"", totalPresentAttendance:"", totalAbsentAttendance:"" });
+    }
 
     try {
         const allAttendance = await Attendance.find({
@@ -142,16 +146,17 @@ exports.getTotalAttendance = async (req, res) => {
             }
         });
 
+        console.log({enrollmentNumber})
+
         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
         const totalAbsentAttendance = allAttendance.filter(record => record.attendance === 'absent').length;
 
-        res.json({ enrollmentNumber: enrollmentNumber, month, totalPresentAttendance, totalAbsentAttendance });
+        res.json({ enrollmentNumber, month, totalPresentAttendance, totalAbsentAttendance });
     } catch (error) {
         console.error('Error fetching total attendance:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-
 
 // Update Employee
 exports.updateEmployee = async (req, res) => {
