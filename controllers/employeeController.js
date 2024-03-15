@@ -136,10 +136,8 @@ exports.getTotalAttendance = async (req, res) => {
     if (enrollmentNumber < 1) {
         return res.status(400).json({ error: 'Enrollment number cannot be less than 1' });
     }
-    // Adjust enrollmentNumber if frontend numbering starts from 0
 
     try {
-        enrollmentNumber -= 1;
         const allAttendance = await Attendance.find({
             enrollmentNumber,
             date: {
