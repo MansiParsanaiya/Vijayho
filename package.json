@@ -10,6 +10,7 @@
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "fs": "^0.0.1-security",
     "mongoose": "^8.1.2",
     "mongoose-sequence-plugin": "^1.0.5",
     "morgan": "~1.9.1",

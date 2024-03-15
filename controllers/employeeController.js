@@ -1,6 +1,7 @@
 const Employee = require("../models/employeeModel");
 const Attendance = require('../models/attendanceModel');
 const XLSX = require('xlsx');
+const fs = require('fs');
 
 // Create Employee
 exports.createEmployee = async (req, res) => {
@@ -133,13 +134,13 @@ exports.getTotalAttendance = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;
     const month = parseInt(req.params.month);
 
-    if(enrollmentNumber == 0) {
-        res.json({ message: "Entrollment Number cannot be 0"});
+    if (enrollmentNumber == 0) {
+        res.json({ message: "Entrollment Number cannot be 0" });
     }
 
     try {
         const allAttendance = await Attendance.find({
-            enrollmentNumber ,
+            enrollmentNumber,
             date: {
                 $gte: new Date(new Date().getFullYear(), month - 1, 1),
                 $lt: new Date(new Date().getFullYear(), month, 1),
@@ -195,11 +196,103 @@ exports.deleteEmployee = async (req, res) => {
 }
 
 // Generate Excel file
+// exports.generateExcel = async (req, res) => {
+//     try {
+//         const employees = await Employee.find();
+//         const workbook = XLSX.utils.book_new();
+//         const sheet = XLSX.utils.json_to_sheet(employees);
+//         XLSX.utils.book_append_sheet(workbook, sheet, 'Employees');
+//         XLSX.writeFile(workbook, 'employees.xlsx');
+//         res.download('employees.xlsx');
 
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send({ error: 'Server error' });
 
+//     }
+// }
 
+// Generate Excel file -> POST request
+// exports.generateExcel = async (req, res) => {
+//     try {
+//         const { month, year } = req.body;
 
+//         const startDate = new Date(year, month - 1, 1);
+//         const endDate = new Date(year, month, 0);
 
+//         const employees = await Employee.find({
+//             joiningDate: {
+//                 $gte: startDate,
+//                 $lte: endDate
+//             }
+//         });
+
+//         const formattedEmployees = employees.map(employee => ({
+//             Enrollment_number: employee.enrollmentNumber,
+//             Name: employee.name,
+//             Mobile_number: employee.mobileNumber,
+//             Bank: employee.bank,
+//             AccountNumber: employee.accountNumber,
+//             IFSC_code: employee.ifscCode,
+//             Salary: employee.salary
+//         }));
+
+//         const workbook = XLSX.utils.book_new();
+//         const sheet = XLSX.utils.json_to_sheet(formattedEmployees);
+//         XLSX.utils.book_append_sheet(workbook, sheet, 'Employees');
+//         const filePath = `employees_${year}_${month}.xlsx`;
+//         XLSX.writeFile(workbook, filePath);
+
+//         res.download(filePath, () => {
+//             fs.unlinkSync(filePath);
+//         });
+
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send({ error: 'Server error' });
+//     }
+// }
+
+// Generate Excel file -> GET request
+exports.generateExcel = async (req, res) => {
+    try {
+        const { month, year } = req.query; // Fetch parameters from query
+
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        const employees = await Employee.find({
+            joiningDate: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        });
+
+        const formattedEmployees = employees.map(employee => ({
+            Enrollment_number: employee.enrollmentNumber,
+            Name: employee.name,
+            Mobile_number: employee.mobileNumber,
+            Bank: employee.bank,
+            AccountNumber: employee.accountNumber,
+            IFSC_code: employee.ifscCode,
+            Salary: employee.salary
+        }));
+
+        const workbook = XLSX.utils.book_new();
+        const sheet = XLSX.utils.json_to_sheet(formattedEmployees);
+        XLSX.utils.book_append_sheet(workbook, sheet, 'Employees');
+        const filePath = `employees_${year}_${month}.xlsx`;
+        XLSX.writeFile(workbook, filePath);
+
+        res.download(filePath, () => {
+            fs.unlinkSync(filePath);
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: 'Server error' });
+    }
+}
 
 
 
