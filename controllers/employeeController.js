@@ -133,7 +133,9 @@ exports.getTotalAttendance = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;
     const month = parseInt(req.params.month);
 
-
+    if(enrollmentNumber == 0) {
+        res.json({ message: "Entrollment Number cannot be 0"});
+    }
 
     try {
         const allAttendance = await Attendance.find({
