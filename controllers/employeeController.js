@@ -132,21 +132,17 @@ exports.getEmployeeAttendance = async (req, res) => {
 exports.getTotalAttendance = async (req, res) => {
     const enrollmentNumber = req.params.enrollmentNumber;
     const month = parseInt(req.params.month);
-    
-    if(enrollmentNumber == 0) {
-      return res.json({ enrollmentNumber:"", month:"", totalPresentAttendance:"", totalAbsentAttendance:"" });
-    }
+
+
 
     try {
         const allAttendance = await Attendance.find({
-            enrollmentNumber,
+            enrollmentNumber ,
             date: {
                 $gte: new Date(new Date().getFullYear(), month - 1, 1),
                 $lt: new Date(new Date().getFullYear(), month, 1),
             }
         });
-
-        console.log({enrollmentNumber})
 
         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
         const totalAbsentAttendance = allAttendance.filter(record => record.attendance === 'absent').length;
