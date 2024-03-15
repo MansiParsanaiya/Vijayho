@@ -132,11 +132,7 @@ exports.getEmployeeAttendance = async (req, res) => {
 exports.getTotalAttendance = async (req, res) => {
     let enrollmentNumber = parseInt(req.params.enrollmentNumber);
     const month = parseInt(req.params.month);
-
-    if (enrollmentNumber < 1) {
-        return res.status(400).json({ error: 'Enrollment number cannot be less than 1' });
-    }
-
+    
     try {
         const allAttendance = await Attendance.find({
             enrollmentNumber,
