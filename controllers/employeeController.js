@@ -1,5 +1,6 @@
 const Employee = require("../models/employeeModel");
 const Attendance = require('../models/attendanceModel');
+const XLSX = require('xlsx');
 
 // Create Employee
 exports.createEmployee = async (req, res) => {
@@ -129,11 +130,17 @@ exports.getEmployeeAttendance = async (req, res) => {
 
 // Get Total Employee Attendance by monthly
 exports.getTotalAttendance = async (req, res) => {
-    const enrollmentNumber = req.params.enrollmentNumber;
+    let enrollmentNumber = parseInt(req.params.enrollmentNumber);
     const month = parseInt(req.params.month);
 
-    try {
+    if (enrollmentNumber === 0) {
+        return res.status(400).json({ error: 'Enrollment number cannot be 0' });
+    }
 
+    // Adjust enrollmentNumber if frontend numbering starts from 0
+    enrollmentNumber -= 1;
+
+    try {
         const allAttendance = await Attendance.find({
             enrollmentNumber,
             date: {
@@ -145,12 +152,13 @@ exports.getTotalAttendance = async (req, res) => {
         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
         const totalAbsentAttendance = allAttendance.filter(record => record.attendance === 'absent').length;
 
-        res.json({ enrollmentNumber, month, totalPresentAttendance , totalAbsentAttendance});
+        res.json({ enrollmentNumber: enrollmentNumber + 1, month, totalPresentAttendance, totalAbsentAttendance });
     } catch (error) {
         console.error('Error fetching total attendance:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
 
 // Update Employee
 exports.updateEmployee = async (req, res) => {
@@ -190,8 +198,55 @@ exports.deleteEmployee = async (req, res) => {
     }
 }
 
+// Generate Excel file
+exports.generateExcelSheet = async (req, res) => {
+    const { year, month } = req.params;
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0, 23, 59, 59);
 
+    try {
+        // Aggregate attendance data
+        const attendanceData = await Attendance.aggregate([
+            {
+                $match: {
+                    date: { $gte: startDate, $lte: endDate }
+                }
+            },
+            {
+                $group: {
+                    _id: '$enrollmentNumber',
+                    attendance: { $push: '$attendance' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'employees',
+                    localField: '_id',
+                    foreignField: 'enrollmentNumber',
+                    as: 'employee'
+                }
+            },
+            {
+                $project: {
+                    name: '$employee.name',
+                    attendance: 1
+                }
+            }
+        ]);
 
+        // Generate Excel sheet
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(attendanceData);
+        XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
+        const filePath = `attendance_${year}_${month}.xlsx`;
+        XLSX.writeFile(wb, filePath);
+
+        res.download(filePath); // Send Excel file as response
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+}
 
 
 

@@ -13,6 +13,7 @@
     "mongoose": "^8.1.2",
     "mongoose-sequence-plugin": "^1.0.5",
     "morgan": "~1.9.1",
-    "nodemon": "^3.0.3"
+    "nodemon": "^3.0.3",
+    "xlsx": "^0.18.5"
   }
 }

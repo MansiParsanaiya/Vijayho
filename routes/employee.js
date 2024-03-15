@@ -24,6 +24,9 @@ router.patch('/:enrollmentNumber', employeeController.updateEmployee)
 // Delete
 router.delete('/delete/:enrollmentNumber', employeeController.deleteEmployee)
 
+// Generate Excel file
+router.get('/attendance/excel/:year/:month', employeeController.generateExcelSheet)
+
 // =================================================   Home Page  ================================================
 
 router.get('/totalEmployee', totalEmployee)

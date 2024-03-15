@@ -7,6 +7,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors=require('cors');
+const XLSX = require('xlsx');
 
 var indexRouter = require('./routes/index');
 var employeeRouter = require('./routes/employee');
