@@ -24,10 +24,11 @@ router.patch('/:enrollmentNumber', employeeController.updateEmployee)
 // Delete
 router.delete('/delete/:enrollmentNumber', employeeController.deleteEmployee)
 
-// Generate Excel file
-router.post('/getExcel', employeeController.postExcel)
+// POST Generate Excel file
+router.post('/postExcel', employeeController.postExcel)
 
-router.get('/postExcel', employeeController.getExcel)
+// GET Generate Excel file
+router.get('/getExcel', employeeController.getExcel)
 
 // =================================================   Home Page  ================================================
 

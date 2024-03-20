@@ -14,7 +14,6 @@ var employeeRouter = require('./routes/employee');
 var attendanceRouter = require('./routes/attendance');
 const connection = require('./connect');
 
-
 var app = express();
 app.use(cors());
 app.use(logger('dev'));
