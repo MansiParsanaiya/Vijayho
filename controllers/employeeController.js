@@ -212,47 +212,6 @@ exports.deleteEmployee = async (req, res) => {
 //     }
 // }
 
-// Generate Excel file -> POST request
-exports.postExcel = async (req, res) => {
-    try {
-        const { month, year } = req.body;
-
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 0);
-
-        const employees = await Employee.find({
-            joiningDate: {
-                $gte: startDate,
-                $lte: endDate
-            }
-        });
-
-        const formattedEmployees = employees.map(employee => ({
-            Enrollment_number: employee.enrollmentNumber,
-            Name: employee.name,
-            Mobile_number: employee.mobileNumber,
-            Bank: employee.bank,
-            AccountNumber: employee.accountNumber,
-            IFSC_code: employee.ifscCode,
-            Salary: employee.salary
-        }));
-
-        const workbook = XLSX.utils.book_new();
-        const sheet = XLSX.utils.json_to_sheet(formattedEmployees);
-        XLSX.utils.book_append_sheet(workbook, sheet, 'Employees');
-        const filePath = `employees_${year}_${month}.xlsx`;
-        XLSX.writeFile(workbook, filePath);
-
-        res.download(filePath, () => {
-            fs.unlinkSync(filePath);
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: 'Server error' });
-    }
-}
-
 // Generate Excel file -> GET request
 exports.getExcel = async (req, res) => {
     try {
