@@ -1,7 +1,6 @@
 const Employee = require("../models/employeeModel");
 const Attendance = require('../models/attendanceModel');
-const XLSX = require('xlsx');
-const fs = require('fs');
+const exceljs = require('exceljs');
 
 // Create Employee
 exports.createEmployee = async (req, res) => {
@@ -215,45 +214,48 @@ exports.deleteEmployee = async (req, res) => {
 // Generate Excel file -> GET request
 exports.getExcel = async (req, res) => {
     try {
-        const { month, year } = req.query; // Fetch parameters from query
+        // Get all employees from the database
+        const employees = await Employee.find();
 
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 0);
+        // Create a new workbook
+        const workbook = new exceljs.Workbook();
 
-        const employees = await Employee.find({
-            joiningDate: {
-                $gte: startDate,
-                $lte: endDate
-            }
+        // Add a new worksheet
+        const worksheet = workbook.addWorksheet('Monthly Employee Sheet');
+
+        // Define headers for the Excel sheet
+        worksheet.addRow(['Enrollment number', 'Name', 'Mobile number', 'Bank name', 'Bank number', 'IFSC code', 'Salary']);
+
+        // Add employee data to the worksheet
+        employees.forEach(employee => {
+            worksheet.addRow([
+                employee.enrollmentNumber,
+                employee.name,
+                employee.mobileNumber,
+                employee.bank,
+                employee.accountNumber,
+                employee.ifscCode,
+                employee.salary
+            ]);
         });
 
-        const formattedEmployees = employees.map(employee => ({
-            Enrollment_number: employee.enrollmentNumber,
-            Name: employee.name,
-            Mobile_number: employee.mobileNumber,
-            Bank: employee.bank,
-            AccountNumber: employee.accountNumber,
-            IFSC_code: employee.ifscCode,
-            Salary: employee.salary
-        }));
-
-        const workbook = XLSX.utils.book_new();
-        const sheet = XLSX.utils.json_to_sheet(formattedEmployees);
-        XLSX.utils.book_append_sheet(workbook, sheet, 'Employees');
-        const filePath = `employees_${year}_${month}.xlsx`;
-        XLSX.writeFile(workbook, filePath);
-
-        res.download(filePath, () => {
-            fs.unlinkSync(filePath);
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: 'Server error' });
+        // Generate Excel file
+        workbook.xlsx.writeBuffer()
+            .then(buffer => {
+                // Send the generated Excel file as base64 string in response
+                res.status(200)
+                    .contentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                    .send(buffer.toString('base64'));
+            })
+            .catch(err => {
+                console.error('Error generating Excel file:', err);
+                res.status(500).send('Error generating Excel file');
+            });
+    } catch (err) {
+        console.error('Error handling request:', err);
+        res.status(500).send('Error handling request');
     }
 }
-
-
 
 
 
