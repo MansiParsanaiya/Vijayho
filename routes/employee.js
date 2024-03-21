@@ -16,7 +16,7 @@ router.get('/getTotalAttendance/:enrollmentNumber/:month', employeeController.ge
 router.get('/getEmployeeAttendance', employeeController.getEmployeeAttendance);
 
 // Create
-router.post('/postEmployee', employeeController.createEmployee);
+router.post('/postEmployee', employeeController.create);
 
 // Update
 router.patch('/:enrollmentNumber', employeeController.updateEmployee)

@@ -3,7 +3,7 @@ const Attendance = require('../models/attendanceModel');
 const exceljs = require('exceljs');
 
 // Create Employee
-exports.createEmployee = async (req, res) => {
+exports.create = async (req, res) => {
     try {
 
         const { joiningDate, leavingDate } = req.body;
