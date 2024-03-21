@@ -14,9 +14,7 @@ exports.create = async (req, res) => {
         else if (isNaN(Date.parse(joiningDate))) {
             return res.status(400).json({ message: "Joining Date should be in YYYY-MM-DD format !" })
         }
-
-        // Check if leavingDate is provided and valid
-        if (!leavingDate || isNaN(Date.parse(leavingDate))) {
+        if (!leavingDate) {
             return res.status(400).json({ message: "Leaving Date is required and should be a valid date!" });
         }
         else if (isNaN(Date.parse(leavingDate))) {
