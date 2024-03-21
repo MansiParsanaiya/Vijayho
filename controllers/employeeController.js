@@ -27,7 +27,8 @@ exports.create = async (req, res) => {
 
         await newEmployee.save();
 
-        res.status(200).json({ message: "Employee registered Successfully !" });
+        res.status(200).json({ status: true, data: ["Employee registered Successfully !"] });
+
     } catch (error) {
         console.error('Error creating employee:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
