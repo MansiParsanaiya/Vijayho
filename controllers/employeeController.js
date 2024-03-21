@@ -10,22 +10,22 @@ exports.create = async (req, res) => {
         const { joiningDate, leavingDate } = req.body;
 
         if (!joiningDate) {
-            return res.status(400).json({ status: false, data: ["Joining Date is required !"] });
+            return res.status(400).json({ status: false, data: "Joining Date is required !" });
         }
         else if (isNaN(Date.parse(joiningDate))) {
-            return res.status(400).json({ status: false, data: ["Joining Date should be in YYYY-MM-DD format !"] })
+            return res.status(400).json({ status: false, data: "Joining Date should be in YYYY-MM-DD format !" })
         }
 
         if (!leavingDate) {
-            return res.status(400).json({ status: false, data: ["Leaving Date is required !"] });
+            return res.status(400).json({ status: false, data: "Leaving Date is required !" });
         }
         else if (isNaN(Date.parse(leavingDate))) {
-            return res.status(400).json({ status: false, data: ["Leaving Date should be in YYYY-MM-DD format !"] })
+            return res.status(400).json({ status: false, data: "Leaving Date should be in YYYY-MM-DD format !" })
         }
 
         // Ensure leaving date is after joining date
         if (new Date(leavingDate) <= new Date(joiningDate)) {
-            return res.status(400).json({ status: false, data: ["Leaving Date should be after Joining Date!"] });
+            return res.status(400).json({ status: false, data: "Leaving Date should be after Joining Date!" });
         }
 
         // Entrollment Number Auto-Increment
@@ -41,8 +41,7 @@ exports.create = async (req, res) => {
 
         await newEmployee.save();
 
-        res.status(200).json({ status: true, data: ["Employee registered Successfully !"] });
-
+        res.status(200).json({ status: true, data: "Employee registered Successfully !" });
     } catch (error) {
         console.error('Error creating employee:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -182,7 +181,7 @@ exports.updateEmployee = async (req, res) => {
         const employee = await Employee.findOneAndUpdate({ enrollmentNumber }, updateFields, { new: true });
 
         if (!employee) {
-            return res.status(404).send({ data: ['Employee not found'] });
+            return res.status(404).send({ data: 'Employee not found' });
         }
 
         res.send({
