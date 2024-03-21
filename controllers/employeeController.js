@@ -7,12 +7,27 @@ exports.create = async (req, res) => {
     try {
 
         const { joiningDate, leavingDate } = req.body;
+
         if (!joiningDate) {
-            return res.json({ message: "Joining Date is required !" });
+            return res.status(400).json({ message: "Joining Date is required !" });
         }
-        if (!leavingDate) {
-            return res.json({ message: "Leaving Date is required !" });
+        else if (isNaN(Date.parse(joiningDate))) {
+            return res.status(400).json({ message: "Joining Date should be in YYYY-MM-DD format !" })
         }
+
+        // Check if leavingDate is provided and valid
+        if (!leavingDate || isNaN(Date.parse(leavingDate))) {
+            return res.status(400).json({ message: "Leaving Date is required and should be a valid date!" });
+        }
+        else if (isNaN(Date.parse(leavingDate))) {
+            return res.status(400).json({ message: "Leaving Date should be in YYYY-MM-DD format !" })
+        }
+
+        // Ensure leaving date is after joining date
+        if (new Date(leavingDate) <= new Date(joiningDate)) {
+            return res.status(400).json({ message: "Leaving Date should be after Joining Date!" });
+        }
+
 
         // Entrollment Number Auto-Increment
         const count = await Employee.countDocuments();
