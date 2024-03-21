@@ -1,6 +1,7 @@
 const Employee = require("../models/employeeModel");
 const Attendance = require('../models/attendanceModel');
-const exceljs = require('exceljs');
+const ExcelJS = require('exceljs');
+const base64 = require('base64-stream');
 
 // Create Employee
 exports.create = async (req, res) => {
@@ -228,7 +229,36 @@ exports.deleteEmployee = async (req, res) => {
 //     }
 // }
 
+exports.generateExcel = async (req, res) => {
+    try {
+        const employees = await Employee.find({}, { _id: 0, enrollmentNumber: 1, name: 1, mobileNumber: 1, bank: 1, accountNumber: 1, ifscCode: 1, salary: 1 });
 
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Employees');
+
+        worksheet.columns = [
+            { header: 'Enrollment Number', key: 'enrollmentNumber', width: 20 },
+            { header: 'Name', key: 'name', width: 30 },
+            { header: 'Mobile Number', key: 'mobileNumber', width: 20 },
+            { header: 'Bank', key: 'bank', width: 20 },
+            { header: 'Account Number', key: 'accountNumber', width: 20 },
+            { header: 'IFSC Code', key: 'ifscCode', width: 20 },
+            { header: 'Salary', key: 'salary', width: 15 }
+        ];
+
+        employees.forEach(employee => {
+            worksheet.addRow(employee);
+        });
+
+        const stream = await workbook.xlsx.writeBuffer();
+        const base64String = stream.toString('base64');
+
+        res.json({ base64String });
+    } catch (error) {
+        console.error('Error generating Excel:', error);
+        res.status(500).json({ error: 'An error occurred while generating Excel sheet' });
+    }
+}
 
 
 
