@@ -6,7 +6,7 @@ const base64 = require('base64-stream');
 // Create Employee
 exports.create = async (req, res) => {
     try {
-
+        
         const { joiningDate, leavingDate } = req.body;
 
         if (!joiningDate) {
