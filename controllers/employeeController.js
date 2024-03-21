@@ -6,12 +6,27 @@ const exceljs = require('exceljs');
 exports.createEmployee = async (req, res) => {
     try {
 
-        const { joiningDate, leavingDate } = req.body;
+        const { joiningDate, leavingDate, adharCardNumber } = req.body;
+        
         if (!joiningDate) {
-            return res.json({ message: "Joining Date is required !" });
+            return res.status(400).json({ message: "Joining Date is required." });
         }
         if (!leavingDate) {
-            return res.json({ message: "Leaving Date is required !" });
+            return res.status(400).json({ message: "Leaving Date is required." });
+        }
+
+
+
+        // Custom validation for date format
+        if (!isValidDateFormat(joiningDate) || !isValidDateFormat(leavingDate)) {
+            return res.status(400).json({ message: "Date format should be YYYY-MM-DD." });
+        }
+
+        // Custom validation for date range
+        const parsedJoiningDate = new Date(joiningDate);
+        const parsedLeavingDate = new Date(leavingDate);
+        if (parsedLeavingDate <= parsedJoiningDate) {
+            return res.status(400).json({ message: "Leaving date must be after joining date." });
         }
 
         // Entrollment Number Auto-Increment
@@ -33,6 +48,14 @@ exports.createEmployee = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+// Function to validate date format (YYYY-MM-DD)
+function isValidDateFormat(dateString) {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    return dateRegex.test(dateString);
+}
+
+
 
 // Read all employee
 // exports.getEmployee = async (req, res) => {
@@ -170,7 +193,7 @@ exports.updateEmployee = async (req, res) => {
             return res.status(404).send({ error: 'Employee not found' });
         }
 
-        res.send({ message: `Entrollment Number ${enrollmentNumber} data updated successfully !`, data: employee });
+        res.send({ message: `Enrollment Number ${enrollmentNumber} data updated successfully !`, data: employee });
     } catch (error) {
         console.error(error);
         res.status(500).send({ error: 'Server error' });
@@ -211,51 +234,47 @@ exports.deleteEmployee = async (req, res) => {
 //     }
 // }
 
-// Generate Excel file -> GET request
-exports.getExcel = async (req, res) => {
-    try {
-        // Get all employees from the database
-        const employees = await Employee.find();
 
-        // Create a new workbook
-        const workbook = new exceljs.Workbook();
 
-        // Add a new worksheet
-        const worksheet = workbook.addWorksheet('Monthly Employee Sheet');
 
-        // Define headers for the Excel sheet
-        worksheet.addRow(['Enrollment number', 'Name', 'Mobile number', 'Bank name', 'Bank number', 'IFSC code', 'Salary']);
 
-        // Add employee data to the worksheet
-        employees.forEach(employee => {
-            worksheet.addRow([
-                employee.enrollmentNumber,
-                employee.name,
-                employee.mobileNumber,
-                employee.bank,
-                employee.accountNumber,
-                employee.ifscCode,
-                employee.salary
-            ]);
-        });
 
-        // Generate Excel file
-        workbook.xlsx.writeBuffer()
-            .then(buffer => {
-                // Send the generated Excel file as base64 string in response
-                res.status(200)
-                    .contentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-                    .send(buffer.toString('base64'));
-            })
-            .catch(err => {
-                console.error('Error generating Excel file:', err);
-                res.status(500).send('Error generating Excel file');
-            });
-    } catch (err) {
-        console.error('Error handling request:', err);
-        res.status(500).send('Error handling request');
-    }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
