@@ -185,7 +185,7 @@ exports.updateEmployee = async (req, res) => {
             return res.status(404).send({ error: 'Employee not found' });
         }
 
-        res.send({ message: `Enrollment Number ${enrollmentNumber} data updated successfully !`, data: employee });
+        res.send({ data: [`Enrollment Number ${enrollmentNumber} data updated successfully !`], data: employee });
     } catch (error) {
         console.error(error);
         res.status(500).send({ error: 'Server error' });
