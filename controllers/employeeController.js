@@ -24,7 +24,7 @@ exports.create = async (req, res) => {
 
         // Ensure leaving date is after joining date
         if (new Date(leavingDate) <= new Date(joiningDate)) {
-            return res.status(400).json({ status: true, data: ["Leaving Date should be after Joining Date!"] });
+            return res.status(400).json({ status: false, data: ["Leaving Date should be after Joining Date!"] });
         }
 
 
