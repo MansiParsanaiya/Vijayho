@@ -16,13 +16,13 @@ exports.create = async (req, res) => {
 
         // Entrollment Number Auto-Increment
         const count = await Employee.countDocuments();
-        const enrollNum = count + 1;
+        const incrementedEnrollmentNumber = count + 1;
 
         const employeeData = req.body;
         // const newEmployee = new Employee(employeeData);
         const newEmployee = new Employee({
             ...employeeData,
-            enrollmentNumber: enrollNum.toString()
+            enrollmentNumber: incrementedEnrollmentNumber.toString()
         });
 
         await newEmployee.save();
