@@ -6,27 +6,12 @@ const exceljs = require('exceljs');
 exports.createEmployee = async (req, res) => {
     try {
 
-        const { joiningDate, leavingDate, adharCardNumber } = req.body;
-        
+        const { joiningDate, leavingDate } = req.body;
         if (!joiningDate) {
-            return res.status(400).json({ message: "Joining Date is required." });
+            return res.json({ message: "Joining Date is required !" });
         }
         if (!leavingDate) {
-            return res.status(400).json({ message: "Leaving Date is required." });
-        }
-
-
-
-        // Custom validation for date format
-        if (!isValidDateFormat(joiningDate) || !isValidDateFormat(leavingDate)) {
-            return res.status(400).json({ message: "Date format should be YYYY-MM-DD." });
-        }
-
-        // Custom validation for date range
-        const parsedJoiningDate = new Date(joiningDate);
-        const parsedLeavingDate = new Date(leavingDate);
-        if (parsedLeavingDate <= parsedJoiningDate) {
-            return res.status(400).json({ message: "Leaving date must be after joining date." });
+            return res.json({ message: "Leaving Date is required !" });
         }
 
         // Entrollment Number Auto-Increment
@@ -48,14 +33,6 @@ exports.createEmployee = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
-
-// Function to validate date format (YYYY-MM-DD)
-function isValidDateFormat(dateString) {
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    return dateRegex.test(dateString);
-}
-
-
 
 // Read all employee
 // exports.getEmployee = async (req, res) => {
