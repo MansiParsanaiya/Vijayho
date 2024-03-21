@@ -27,7 +27,6 @@ exports.create = async (req, res) => {
             return res.status(400).json({ status: false, data: ["Leaving Date should be after Joining Date!"] });
         }
 
-
         // Entrollment Number Auto-Increment
         const count = await Employee.countDocuments();
         const incrementedEnrollmentNumber = count + 1;
@@ -185,7 +184,10 @@ exports.updateEmployee = async (req, res) => {
             return res.status(404).send({ data: ['Employee not found'] });
         }
 
-        res.send({ data: [`Enrollment Number ${enrollmentNumber} data updated successfully !`], data: employee });
+        res.send({
+            data: [{ message: `Enrollment Number ${enrollmentNumber} data updated successfully !` },
+            { employee }]
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send({ error: 'Server error' });
@@ -202,7 +204,7 @@ exports.deleteEmployee = async (req, res) => {
             return res.status(404).send({ error: `Enrollment Number ${enrollmentNumber} does not exists :(` });
         }
 
-        res.send({ message: `Enrollment Number ${enrollmentNumber} deleted successfully !` });
+        res.send({ data: `Enrollment Number ${enrollmentNumber} deleted successfully !` });
     } catch (error) {
         console.error(error);
         res.status(500).send({ error: 'Server error' });
