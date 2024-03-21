@@ -9,21 +9,22 @@ exports.create = async (req, res) => {
         const { joiningDate, leavingDate } = req.body;
 
         if (!joiningDate) {
-            return res.status(400).json({ message: "Joining Date is required !" });
+            return res.status(400).json({ status: true, data: ["Joining Date is required !"] });
         }
         else if (isNaN(Date.parse(joiningDate))) {
-            return res.status(400).json({ message: "Joining Date should be in YYYY-MM-DD format !" })
+            return res.status(400).json({ status: true, data: ["Joining Date should be in YYYY-MM-DD format !"] })
         }
+
         if (!leavingDate) {
-            return res.status(400).json({ message: "Leaving Date is required and should be a valid date!" });
+            return res.status(400).json({ status: true, data: ["Leaving Date is required !"] });
         }
         else if (isNaN(Date.parse(leavingDate))) {
-            return res.status(400).json({ message: "Leaving Date should be in YYYY-MM-DD format !" })
+            return res.status(400).json({ status: true, data: ["Leaving Date should be in YYYY-MM-DD format !"] })
         }
 
         // Ensure leaving date is after joining date
         if (new Date(leavingDate) <= new Date(joiningDate)) {
-            return res.status(400).json({ message: "Leaving Date should be after Joining Date!" });
+            return res.status(400).json({ status: true, data: ["Leaving Date should be after Joining Date!"] });
         }
 
 
