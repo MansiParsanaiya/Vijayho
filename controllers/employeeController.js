@@ -6,7 +6,7 @@ const base64 = require('base64-stream');
 // Create Employee
 exports.create = async (req, res) => {
     try {
-        
+
         const { joiningDate, leavingDate } = req.body;
 
         if (!joiningDate) {
@@ -148,10 +148,20 @@ exports.getTotalAttendance = async (req, res) => {
     const month = parseInt(req.params.month);
 
     if (enrollmentNumber == 0) {
-        res.json({ message: "Entrollment Number cannot be 0" });
+        return res.json({ status: false, data: "Enrollment Number cannot be 0" });
+    }
+
+    if (month < 1 || month > 12) {
+        return res.status(400).json({ status: false, data: "Invalid month. Month should be between 1 and 12." })
     }
 
     try {
+        const employee = await Employee.findOne({ enrollmentNumber });
+
+        if (!employee) {
+            return res.status(404).json({ status: false, data: "Employee not found" });
+        }
+
         const allAttendance = await Attendance.find({
             enrollmentNumber,
             date: {
@@ -163,7 +173,11 @@ exports.getTotalAttendance = async (req, res) => {
         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
         const totalAbsentAttendance = allAttendance.filter(record => record.attendance === 'absent').length;
 
-        res.json({ enrollmentNumber, month, totalPresentAttendance, totalAbsentAttendance });
+        const { name, mobileNumber } = employee;
+
+        const monthName = new Date(new Date().getFullYear(), month - 1, 1).toLocaleString('default', { month: 'long' });
+
+        res.json({ status: true, enrollmentNumber, name, mobileNumber, month, monthName, totalPresentAttendance, totalAbsentAttendance });
     } catch (error) {
         console.error('Error fetching total attendance:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -184,7 +198,8 @@ exports.updateEmployee = async (req, res) => {
             return res.status(404).send({ data: 'Employee not found' });
         }
 
-        res.send({ success: true,
+        res.send({
+            success: true,
             data: [{ message: `Enrollment Number ${enrollmentNumber} data updated successfully !` },
             { employee }]
         });
