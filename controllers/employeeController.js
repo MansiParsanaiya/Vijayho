@@ -6,7 +6,7 @@ const base64 = require('base64-stream');
 // Create Employee
 exports.create = async (req, res) => {
     try {
-        
+
         const { joiningDate, leavingDate } = req.body;
 
         if (!joiningDate) {
@@ -185,9 +185,9 @@ exports.updateEmployee = async (req, res) => {
         }
 
         res.send({
-            data: [{ message: `Enrollment Number ${enrollmentNumber} data updated successfully !` },
-            { employee }]
-        });
+            status: true, data: employee,
+            data: `Enrollment Number ${enrollmentNumber} data updated successfully !`
+        })
     } catch (error) {
         console.error(error);
         res.status(500).send({ error: 'Server error' });
