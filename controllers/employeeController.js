@@ -185,7 +185,7 @@ exports.updateEmployee = async (req, res) => {
         }
 
         res.send({
-            status: true, data: employee,
+            status: true, data: {employee},
             data: `Enrollment Number ${enrollmentNumber} data updated successfully !`
         })
     } catch (error) {
