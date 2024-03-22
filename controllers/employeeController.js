@@ -9,7 +9,7 @@ exports.create = async (req, res) => {
         const { joiningDate, leavingDate, enrollmentNumber } = req.body;
 
         if (enrollmentNumber) {
-            return res.status(400).json({ status: false, data: "enrollmentNumber is auto-incrementing and should not be passed in the JSON data!" });
+            return res.status(400).json({ status: false, data: "EnrollmentNumber is auto-incrementing. So, should not be passed in the JSON data!" });
         }
 
         if (!joiningDate) {
