@@ -6,8 +6,11 @@ const base64 = require('base64-stream');
 // Create Employee
 exports.create = async (req, res) => {
     try {
+        const { joiningDate, leavingDate, enrollmentNumber } = req.body;
 
-        const { joiningDate, leavingDate } = req.body;
+        if (enrollmentNumber) {
+            return res.status(400).json({ status: false, data: "enrollmentNumber is auto-incrementing and should not be passed in the JSON data!" });
+        }
 
         if (!joiningDate) {
             return res.status(400).json({ status: false, data: "Joining Date is required !" });
