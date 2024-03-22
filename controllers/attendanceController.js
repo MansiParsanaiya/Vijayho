@@ -17,14 +17,14 @@ exports.addAttendance = async (req, res) => {
     else {
       date = new Date(date);
       if (isNaN(date.getTime())) {
-        return res.status(400).json({ data: 'Invalid date format. Please provide a valid date.' });
+        return res.status(400).json({ status: false, data: 'Invalid date format. Please provide a valid date.' });
       }
     }
 
     const employeeExists = await Employee.exists({ enrollmentNumber });
 
     if (!employeeExists) {
-      return res.status(400).json({ message: `Employee with enrollment number ${enrollmentNumber} does not exist.` });
+      return res.status(400).json({ status: true, data: `Employee with enrollment number ${enrollmentNumber} does not exist.` });
     }
 
     const formattedDate = date.toISOString().split('T')[0];
@@ -140,7 +140,7 @@ exports.updateAttendance = async (req, res) => {
       const { attendance } = existingAttendance;
 
       if (attendance === req.body.attendance) {
-        return res.status(400).json({ data: `Attendance is already marked as ${req.body.attendance}.` });
+        return res.status(400).json({ status: false, data: `Attendance is already marked as ${req.body.attendance}.` });
       }
     }
 
@@ -155,12 +155,12 @@ exports.updateAttendance = async (req, res) => {
     )
 
     if (!updatedAttendance) {
-      return res.status(404).json({ data: `Attendance record not found` });
+      return res.status(404).json({ status: false, data: `Attendance record not found` });
     }
 
     // console.log(updatedAttendance);
 
-    return res.status(200).json({ data: `Enrollment Number ${enrollmentNumber} attendance updated successfully!`, data: updatedAttendance });
+    return res.status(200).json({ status: true, data: `Enrollment Number ${enrollmentNumber} attendance updated successfully!`, data: updatedAttendance });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ data: 'Internal Server Error' });
@@ -181,7 +181,7 @@ exports.getAttendanceBetweenTwoDates = async (req, res) => {
 
 
     if (attendance.length === 0) {
-      return res.status(404).json({ data: 'Attendance record not found for this enrollmentNumber on this date' });
+      return res.status(404).json({ status: false, data: 'Attendance record not found for this enrollmentNumber on this date' });
     }
 
     const attendanceBetweenDates = attendance.map((record) => {
