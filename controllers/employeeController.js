@@ -9,7 +9,7 @@ exports.create = async (req, res) => {
         const { joiningDate, leavingDate, enrollmentNumber } = req.body;
 
         if (enrollmentNumber) {
-            return res.status(400).json({ status: false, data: "EnrollmentNumber is auto-incrementing. So, should not be passed in the JSON data!" });
+            return res.status(400).json({ status: false, data: "EnrollmentNumber is auto-incrementing. scSo, should not be passed in the JSON data!" });
         }
 
         if (!joiningDate) {
@@ -176,11 +176,14 @@ exports.getTotalAttendance = async (req, res) => {
         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
         const totalAbsentAttendance = allAttendance.filter(record => record.attendance === 'absent').length;
 
-        const { name, mobileNumber } = employee;
+        const { name, mobileNumber, salary } = employee;
+
+        const totalSalary = salary * totalPresentAttendance;
 
         const monthName = new Date(new Date().getFullYear(), month - 1, 1).toLocaleString('default', { month: 'long' });
 
-        res.json({ status: true, enrollmentNumber, name, mobileNumber, month, monthName, totalPresentAttendance, totalAbsentAttendance });
+        res.json({ status: true, enrollmentNumber, name, mobileNumber, month, monthName, totalPresentAttendance, totalAbsentAttendance, salary, totalSalary })
+
     } catch (error) {
         console.error('Error fetching total attendance:', error);
         res.status(500).json({ error: 'Internal server error' });
