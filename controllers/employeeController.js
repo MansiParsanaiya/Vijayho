@@ -235,9 +235,9 @@ exports.deleteEmployee = async (req, res) => {
 // Generate Excel file
 exports.generateExcel = async (req, res) => {
     try {
-        const startDate = moment().subtract(12, 'months').startOf('month').toDate();
+        const startDate = moment().subtract(1, 'year').startOf('year').toDate();
         const endDate = moment().endOf('day').toDate();
-
+        
         const allEmployees = await Employee.find({});
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Employees');
