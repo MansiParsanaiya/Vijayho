@@ -1,7 +1,7 @@
 const Employee = require("../models/employeeModel");
 const Attendance = require('../models/attendanceModel');
 const ExcelJS = require('exceljs');
-const base64 = require('base64-stream');
+const moment = require('moment');
 
 // Create Employee
 exports.create = async (req, res) => {
@@ -249,9 +249,66 @@ exports.deleteEmployee = async (req, res) => {
 //     }
 // }
 
+// exports.generateExcel = async (req, res) => {
+//     try {
+
+//         const allAttendance = await Attendance.find({
+//             enrollmentNumber,
+//             date: {
+//                 $gte: new Date(new Date().getFullYear(), month - 1, 1),
+//                 $lt: new Date(new Date().getFullYear(), month, 1),
+//             }
+//         })
+//         const totalPresentAttendance = allAttendance.filter(record => record.attendance === 'present').length;
+//         const totalSalary = totalPresentAttendance * salary;
+
+        
+//         const employees = await Employee.find({}, { _id: 0, enrollmentNumber: 1, name: 1, mobileNumber: 1, bank: 1, accountNumber: 1, ifscCode: 1, salary: 1, totalSalary: 1 });
+        
+//         const workbook = new ExcelJS.Workbook();
+//         const worksheet = workbook.addWorksheet('Employees');
+
+//         worksheet.columns = [
+//             { header: 'Enrollment Number', key: 'enrollmentNumber', width: 20 },
+//             { header: 'Name', key: 'name', width: 30 },
+//             { header: 'Mobile Number', key: 'mobileNumber', width: 20 },
+//             { header: 'Bank', key: 'bank', width: 20 },
+//             { header: 'Account Number', key: 'accountNumber', width: 20 },
+//             { header: 'IFSC Code', key: 'ifscCode', width: 20 },
+//             { header: 'Salary', key: 'salary', width: 15 },
+//             { header: 'Total Salary', key: 'totalSalary', width: 15 }
+//         ];
+
+//         employees.forEach(employee => {
+//             worksheet.addRow(employee);
+//         });
+
+//         const stream = await workbook.xlsx.writeBuffer();
+//         const base64String = stream.toString('base64');
+
+//         res.json({ base64String });
+//     } catch (error) {
+//         console.error('Error generating Excel:', error);
+//         res.status(500).json({ error: 'An error occurred while generating Excel sheet' });
+//     }
+// }
+
+
+
 exports.generateExcel = async (req, res) => {
     try {
-        const employees = await Employee.find({}, { _id: 0, enrollmentNumber: 1, name: 1, mobileNumber: 1, bank: 1, accountNumber: 1, ifscCode: 1, salary: 1 });
+        const startDate = moment().subtract(3, 'months').startOf('month').toDate();
+        const endDate = moment().endOf('day').toDate();
+
+        const allAttendance = await Attendance.find({
+            enrollmentNumber,
+            date: {
+                $gte: startDate,
+                $lte: endDate,
+            }
+        });
+
+        const employees = await Employee.find({}, { _id: 0, enrollmentNumber: 1, name: 1, mobileNumber: 1, bank: 1, accountNumber: 1, ifscCode: 1, salary: 1, totalSalary: 1 });
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Employees');
@@ -263,11 +320,17 @@ exports.generateExcel = async (req, res) => {
             { header: 'Bank', key: 'bank', width: 20 },
             { header: 'Account Number', key: 'accountNumber', width: 20 },
             { header: 'IFSC Code', key: 'ifscCode', width: 20 },
-            { header: 'Salary', key: 'salary', width: 15 }
+            { header: 'Salary', key: 'salary', width: 15 },
+            { header: 'Total Salary', key: 'totalSalary', width: 15 },
+            { header: 'Start Date', key: 'startDate', width: 20 },
+            { header: 'End Date', key: 'endDate', width: 20 }
         ];
 
         employees.forEach(employee => {
-            worksheet.addRow(employee);
+            const totalPresentAttendance = allAttendance.filter(record => record.enrollmentNumber === employee.enrollmentNumber && record.attendance === 'present').length;
+            const salary = employee.salary;
+            const totalSalary = totalPresentAttendance * salary;
+            worksheet.addRow({...employee, totalSalary, startDate, endDate});
         });
 
         const stream = await workbook.xlsx.writeBuffer();
@@ -279,7 +342,6 @@ exports.generateExcel = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while generating Excel sheet' });
     }
 }
-
 
 
 
